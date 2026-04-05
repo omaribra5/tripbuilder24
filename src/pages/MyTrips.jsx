@@ -1,0 +1,84 @@
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Plus, MapPin, Calendar, Loader2 } from 'lucide-react';
+import { format } from 'date-fns';
+import { it } from 'date-fns/locale';
+
+export default function MyTrips() {
+  const { data: trips = [], isLoading } = useQuery({
+    queryKey: ['trips'],
+    queryFn: () => base44.entities.Trip.list('-created_date'),
+  });
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-indigo-50">
+      <div className="max-w-4xl mx-auto px-6 py-10">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">I miei viaggi</h1>
+            <p className="text-muted-foreground mt-1">Tutti i tuoi itinerari salvati</p>
+          </div>
+          <Link to="/new-trip">
+            <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
+              <Plus className="w-4 h-4" />
+              Nuovo viaggio
+            </Button>
+          </Link>
+        </div>
+
+        {isLoading && (
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+          </div>
+        )}
+
+        {!isLoading && trips.length === 0 && (
+          <div className="text-center py-20">
+            <MapPin className="w-12 h-12 text-indigo-300 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-700 mb-2">Nessun viaggio ancora</h2>
+            <p className="text-muted-foreground mb-6">Pianifica il tuo primo viaggio con l'AI!</p>
+            <Link to="/new-trip">
+              <Button className="bg-indigo-600 hover:bg-indigo-700">Inizia ora</Button>
+            </Link>
+          </div>
+        )}
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {trips.map((trip) => (
+            <Link key={trip.id} to={`/trip/${trip.id}`}>
+              <div className="bg-white rounded-2xl shadow-sm border hover:shadow-md transition-shadow overflow-hidden">
+                {trip.cover_image ? (
+                  <img src={trip.cover_image} alt={trip.destination} className="w-full h-40 object-cover" />
+                ) : (
+                  <div className="w-full h-40 bg-gradient-to-br from-indigo-400 to-sky-400 flex items-center justify-center">
+                    <MapPin className="w-10 h-10 text-white" />
+                  </div>
+                )}
+                <div className="p-4">
+                  <h3 className="font-bold text-lg text-gray-900">{trip.destination}</h3>
+                  {trip.country && <p className="text-muted-foreground text-sm">{trip.country}</p>}
+                  {trip.start_date && (
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground mt-2">
+                      <Calendar className="w-4 h-4" />
+                      {format(new Date(trip.start_date), 'd MMM yyyy', { locale: it })}
+                      {trip.end_date && ` → ${format(new Date(trip.end_date), 'd MMM yyyy', { locale: it })}`}
+                    </div>
+                  )}
+                  <div className={`inline-block mt-3 px-2 py-1 rounded-full text-xs font-medium ${
+                    trip.status === 'completed' ? 'bg-green-100 text-green-700' :
+                    trip.status === 'confirmed' ? 'bg-blue-100 text-blue-700' :
+                    'bg-yellow-100 text-yellow-700'
+                  }`}>
+                    {trip.status === 'completed' ? 'Completato' : trip.status === 'confirmed' ? 'Confermato' : 'In pianificazione'}
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

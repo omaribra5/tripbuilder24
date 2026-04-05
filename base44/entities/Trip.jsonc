@@ -1,0 +1,229 @@
+{
+  "name": "Trip",
+  "type": "object",
+  "properties": {
+    "destination": {
+      "type": "string",
+      "description": "Travel destination city/region"
+    },
+    "country": {
+      "type": "string",
+      "description": "Country of the destination"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Trip start date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Trip end date"
+    },
+    "travelers": {
+      "type": "string",
+      "enum": [
+        "solo",
+        "coppia",
+        "famiglia",
+        "amici",
+        "gruppo"
+      ],
+      "description": "Who you're traveling with"
+    },
+    "budget": {
+      "type": "string",
+      "enum": [
+        "economico",
+        "medio",
+        "lusso"
+      ],
+      "description": "Budget level"
+    },
+    "interests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Travel interests"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    },
+    "food_intolerances": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Food intolerances"
+    },
+    "favorite_foods": {
+      "type": "string",
+      "description": "Favorite foods"
+    },
+    "disliked_foods": {
+      "type": "string",
+      "description": "Disliked foods"
+    },
+    "meal_time_preference": {
+      "type": "string",
+      "description": "Preferred meal time e.g. 13:00"
+    },
+    "has_accommodation": {
+      "type": "boolean",
+      "description": "User already has accommodation booked"
+    },
+    "accommodation_name": {
+      "type": "string",
+      "description": "Name or address of the accommodation"
+    },
+    "arrival_airport": {
+      "type": "string",
+      "description": "Arrival airport code or name"
+    },
+    "arrival_datetime": {
+      "type": "string",
+      "description": "Arrival date and time"
+    },
+    "airport_transfer_preference": {
+      "type": "string",
+      "enum": [
+        "pubblico",
+        "taxi",
+        "entrambi"
+      ],
+      "description": "Preferred transfer type from airport"
+    },
+    "itinerary": {
+      "type": "array",
+      "description": "AI-generated itinerary",
+      "items": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "number"
+          },
+          "date": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "activities": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "time": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "duration_minutes": {
+                  "type": "number"
+                },
+                "tip": {
+                  "type": "string"
+                },
+                "lat": {
+                  "type": "number"
+                },
+                "lng": {
+                  "type": "number"
+                },
+                "booking_url": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "hotel_suggestions": {
+      "type": "array",
+      "description": "AI hotel suggestions",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "zone": {
+            "type": "string"
+          },
+          "price_range": {
+            "type": "string"
+          },
+          "booking_url": {
+            "type": "string"
+          },
+          "why": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "airport_transfer": {
+      "type": "object",
+      "description": "Airport to hotel transfer info",
+      "properties": {
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "duration": {
+                "type": "string"
+              },
+              "cost": {
+                "type": "string"
+              },
+              "steps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "cover_image": {
+      "type": "string",
+      "description": "Cover image URL"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "confirmed",
+        "completed"
+      ],
+      "default": "planning"
+    }
+  },
+  "required": [
+    "destination",
+    "start_date",
+    "end_date"
+  ]
+}
