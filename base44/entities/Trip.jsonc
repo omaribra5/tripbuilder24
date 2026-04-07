@@ -148,6 +148,10 @@
         }
       }
     },
+    "activity_guides": {
+      "type": "object",
+      "description": "AI-generated guides for each visitable activity, keyed by activity name"
+    },
     "hotel_suggestions": {
       "type": "array",
       "description": "AI hotel suggestions",

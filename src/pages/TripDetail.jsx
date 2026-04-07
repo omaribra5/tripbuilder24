@@ -11,6 +11,7 @@ import HotelsTab from '@/components/trip/HotelsTab';
 import AirportTab from '@/components/trip/AirportTab';
 import AudioTourTab from '@/components/trip/AudioTourTab';
 import { generateTripWithAI } from '@/lib/tripGenerator';
+import { generateAllGuides } from '@/lib/guideGenerator';
 import { exportTripPDF } from '@/lib/pdfExporter';
 
 export default function TripDetail() {
@@ -41,6 +42,12 @@ export default function TripDetail() {
     const result = await generateTripWithAI(tripData || trip);
     await updateMutation.mutateAsync(result);
     setIsGenerating(false);
+
+    // Generate guides in background (no loading state shown to user)
+    const fullTrip = { ...(tripData || trip), ...result };
+    generateAllGuides(fullTrip).then((activity_guides) => {
+      updateMutation.mutate({ activity_guides });
+    });
   };
 
   if (isLoading || isGenerating) {
