@@ -1,7 +1,14 @@
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MapPin } from 'lucide-react';
+import Autocomplete from '@/components/ui/Autocomplete';
+
+async function fetchCities(query) {
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=6&featuretype=city`;
+  const res = await fetch(url, { headers: { 'Accept-Language': 'it' } });
+  const data = await res.json();
+  return data.filter((item) => ['city', 'town', 'village', 'municipality'].includes(item.type) || item.addresstype === 'city');
+}
 
 export default function StepBasicInfo({ data, update, onNext }) {
   const canNext = data.destination && data.start_date && data.end_date;
@@ -17,41 +24,41 @@ export default function StepBasicInfo({ data, update, onNext }) {
         <div>
           <Label>Città / Destinazione *</Label>
           <div className="relative mt-1">
-            <MapPin className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-            <Input
-              className="pl-9"
-              placeholder="es. Barcellona, Parigi, Tokyo..."
+            <MapPin className="absolute left-3 top-3 w-4 h-4 text-muted-foreground z-10 pointer-events-none" />
+            <Autocomplete
               value={data.destination}
-              onChange={(e) => update({ destination: e.target.value })}
+              onChange={(val) => update({ destination: val })}
+              onSelect={(item) => {
+                const city = item.address?.city || item.address?.town || item.address?.village || item.name;
+                const country = item.address?.country || '';
+                update({ destination: city, country });
+              }}
+              placeholder="es. Barcellona, Parigi, Tokyo..."
+              fetchSuggestions={fetchCities}
+              renderItem={(item) => ({
+                label: item.address?.city || item.address?.town || item.address?.village || item.name,
+                sublabel: [item.address?.state, item.address?.country].filter(Boolean).join(', '),
+              })}
+              className="[&_input]:pl-9"
             />
           </div>
-        </div>
-
-        <div>
-          <Label>Paese</Label>
-          <Input
-            className="mt-1"
-            placeholder="es. Spagna, Francia, Giappone..."
-            value={data.country}
-            onChange={(e) => update({ country: e.target.value })}
-          />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label>Data arrivo *</Label>
-            <Input
+            <input
               type="date"
-              className="mt-1"
+              className="mt-1 w-full border border-input rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               value={data.start_date}
               onChange={(e) => update({ start_date: e.target.value })}
             />
           </div>
           <div>
             <Label>Data partenza *</Label>
-            <Input
+            <input
               type="date"
-              className="mt-1"
+              className="mt-1 w-full border border-input rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               value={data.end_date}
               onChange={(e) => update({ end_date: e.target.value })}
             />

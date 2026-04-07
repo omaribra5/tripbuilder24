@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plane, Bus, Car } from 'lucide-react';
+import { Plane } from 'lucide-react';
+import Autocomplete from '@/components/ui/Autocomplete';
+import { searchAirports } from '@/lib/airportData';
 
 export default function StepAirport({ data, update, onGenerate }) {
-  const [needsTransfer, setNeedsTransfer] = React.useState(null);
+  const [needsTransfer, setNeedsTransfer] = useState(null);
 
   return (
     <div className="space-y-6">
@@ -44,19 +45,25 @@ export default function StepAirport({ data, update, onGenerate }) {
         <div className="space-y-4">
           <div>
             <Label>Aeroporto di arrivo</Label>
-            <Input
+            <Autocomplete
               className="mt-1"
-              placeholder="es. El Prat (BCN), Charles de Gaulle (CDG)..."
               value={data.arrival_airport}
-              onChange={(e) => update({ arrival_airport: e.target.value })}
+              onChange={(val) => update({ arrival_airport: val })}
+              onSelect={(item) => update({ arrival_airport: `${item.name} (${item.code})` })}
+              placeholder="es. El Prat, Fiumicino, CDG..."
+              fetchSuggestions={async (q) => searchAirports(q)}
+              renderItem={(item) => ({
+                label: `${item.name} (${item.code})`,
+                sublabel: `${item.city}, ${item.country}`,
+              })}
             />
           </div>
 
           <div>
             <Label>Data e ora di arrivo</Label>
-            <Input
+            <input
               type="datetime-local"
-              className="mt-1"
+              className="mt-1 w-full border border-input rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               value={data.arrival_datetime}
               onChange={(e) => update({ arrival_datetime: e.target.value })}
             />
@@ -66,9 +73,9 @@ export default function StepAirport({ data, update, onGenerate }) {
             <Label className="mb-2 block">Come preferisci spostarti?</Label>
             <div className="grid grid-cols-3 gap-2">
               {[
-                { value: 'pubblico', label: '🚌 Mezzi pubblici', icon: Bus },
-                { value: 'taxi', label: '🚕 Taxi/NCC', icon: Car },
-                { value: 'entrambi', label: '🔀 Entrambe', icon: null },
+                { value: 'pubblico', label: '🚌 Mezzi pubblici' },
+                { value: 'taxi', label: '🚕 Taxi/NCC' },
+                { value: 'entrambi', label: '🔀 Entrambe' },
               ].map(({ value, label }) => (
                 <button
                   key={value}
