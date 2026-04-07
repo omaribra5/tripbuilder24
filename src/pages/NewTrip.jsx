@@ -29,7 +29,7 @@ export default function NewTrip() {
     favorite_foods: '',
     disliked_foods: '',
     meal_time_preference: '13:00',
-    has_accommodation: false,
+    has_accommodation: null,
     accommodation_name: '',
     arrival_airport: '',
     arrival_datetime: '',
