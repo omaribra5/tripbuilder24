@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Clock, MapPin, Utensils, ShoppingBag, TreePine, Building2, BookOpen } from 'lucide-react';
-import { isGuidable } from '@/lib/guideGenerator';
+import { isGuidable, generateActivityGuide } from '@/lib/guideGenerator';
 import ActivityGuideModal from '@/components/trip/ActivityGuideModal';
 
 const typeConfig = {
@@ -13,15 +13,28 @@ const typeConfig = {
   trasporto: { icon: Clock, color: 'bg-gray-100 text-gray-700', badge: 'Trasporto' },
 };
 
-export default function ItineraryTab({ trip }) {
+export default function ItineraryTab({ trip, onGuideSaved }) {
   const [selectedActivity, setSelectedActivity] = useState(null);
+  const [localGuides, setLocalGuides] = useState({});
+  const [generatingFor, setGeneratingFor] = useState(null);
 
   if (!trip.itinerary?.length) {
     return <div className="text-center py-10 text-muted-foreground">Itinerario non ancora generato</div>;
   }
 
-  const guides = trip.activity_guides || {};
+  const guides = { ...(trip.activity_guides || {}), ...localGuides };
   const guide = selectedActivity ? guides[selectedActivity.name] : null;
+
+  const handleGuideClick = async (act) => {
+    setSelectedActivity(act);
+    if (!guides[act.name]) {
+      setGeneratingFor(act.name);
+      const generated = await generateActivityGuide(act, trip.destination);
+      setLocalGuides((prev) => ({ ...prev, [act.name]: generated }));
+      setGeneratingFor(null);
+      onGuideSaved?.({ ...guides, [act.name]: generated });
+    }
+  };
 
   return (
     <>
@@ -43,7 +56,7 @@ export default function ItineraryTab({ trip }) {
                 const config = typeConfig[act.type] || typeConfig.attrazione;
                 const Icon = config.icon;
                 const hasGuide = isGuidable(act);
-                const guideReady = hasGuide && !!guides[act.name];
+                const guideReady = hasGuide && !!guides[act.name] && generatingFor !== act.name;
 
                 return (
                   <div key={i} className="bg-white rounded-2xl p-4 shadow-sm border">
@@ -72,15 +85,18 @@ export default function ItineraryTab({ trip }) {
                         )}
                         {hasGuide && (
                           <button
-                            onClick={() => setSelectedActivity(act)}
+                            onClick={() => handleGuideClick(act)}
+                            disabled={generatingFor === act.name}
                             className={`mt-3 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full transition-all ${
                               guideReady
                                 ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                                : 'bg-indigo-50 text-indigo-400 border border-indigo-100'
+                                : generatingFor === act.name
+                                ? 'bg-indigo-100 text-indigo-400 border border-indigo-200'
+                                : 'bg-indigo-50 text-indigo-600 border border-indigo-200 hover:bg-indigo-100'
                             }`}
                           >
                             <BookOpen className="w-3 h-3" />
-                            {guideReady ? 'Apri guida AI' : 'Guida in preparazione...'}
+                            {generatingFor === act.name ? 'Generando...' : guideReady ? 'Apri guida AI' : 'Guida AI'}
                           </button>
                         )}
                       </div>

@@ -64,16 +64,15 @@ Rispondi SOLO con il JSON richiesto.
   return result;
 }
 
-export async function generateAllGuides(trip) {
+export async function generateDayGuides(trip, dayNumber) {
   const guides = {};
+  const day = (trip.itinerary || []).find((d) => d.day === dayNumber);
+  if (!day) return guides;
 
-  for (const day of (trip.itinerary || [])) {
-    for (const activity of (day.activities || [])) {
-      if (isGuidable(activity)) {
-        const key = `${activity.name}`;
-        const guide = await generateActivityGuide(activity, trip.destination);
-        guides[key] = guide;
-      }
+  for (const activity of (day.activities || [])) {
+    if (isGuidable(activity)) {
+      const guide = await generateActivityGuide(activity, trip.destination);
+      guides[activity.name] = guide;
     }
   }
 

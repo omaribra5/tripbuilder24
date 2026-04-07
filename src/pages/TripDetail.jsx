@@ -11,7 +11,7 @@ import HotelsTab from '@/components/trip/HotelsTab';
 import AirportTab from '@/components/trip/AirportTab';
 import AudioTourTab from '@/components/trip/AudioTourTab';
 import { generateTripWithAI } from '@/lib/tripGenerator';
-import { generateAllGuides } from '@/lib/guideGenerator';
+import { generateDayGuides, generateActivityGuide, isGuidable } from '@/lib/guideGenerator';
 import { exportTripPDF } from '@/lib/pdfExporter';
 
 export default function TripDetail() {
@@ -43,9 +43,9 @@ export default function TripDetail() {
     await updateMutation.mutateAsync(result);
     setIsGenerating(false);
 
-    // Generate guides in background (no loading state shown to user)
+    // Generate only day 1 guides in background
     const fullTrip = { ...(tripData || trip), ...result };
-    generateAllGuides(fullTrip).then((activity_guides) => {
+    generateDayGuides(fullTrip, 1).then((activity_guides) => {
       updateMutation.mutate({ activity_guides });
     });
   };
@@ -113,7 +113,10 @@ export default function TripDetail() {
           </TabsList>
 
           <TabsContent value="itinerary">
-            <ItineraryTab trip={trip} />
+            <ItineraryTab
+              trip={trip}
+              onGuideSaved={(activity_guides) => updateMutation.mutate({ activity_guides })}
+            />
           </TabsContent>
           <TabsContent value="map">
             <MapTab trip={trip} />
