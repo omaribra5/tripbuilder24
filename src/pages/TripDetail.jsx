@@ -119,6 +119,7 @@ export default function TripDetail() {
             <ItineraryTab
               trip={trip}
               onGuideSaved={(activity_guides) => updateMutation.mutate({ activity_guides })}
+              onItineraryUpdated={(itinerary) => updateMutation.mutate({ itinerary })}
             />
           </TabsContent>
           <TabsContent value="map">

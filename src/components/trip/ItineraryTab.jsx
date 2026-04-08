@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Clock, MapPin, Utensils, ShoppingBag, TreePine, Building2, BookOpen, ExternalLink } from 'lucide-react';
-import { isGuidable, generateActivityGuide } from '@/lib/guideGenerator';
+import { Clock, MapPin, Utensils, ShoppingBag, TreePine, Building2, BookOpen, ExternalLink, RefreshCw } from 'lucide-react';
+import { isGuidable, generateActivityGuide, generateAlternativeActivity } from '@/lib/guideGenerator';
 import ActivityGuideModal from '@/components/trip/ActivityGuideModal';
 
 const typeConfig = {
@@ -13,12 +13,17 @@ const typeConfig = {
   trasporto: { icon: Clock, color: 'bg-gray-100 text-gray-700', badge: 'Trasporto' },
 };
 
-export default function ItineraryTab({ trip, onGuideSaved }) {
+export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated }) {
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [localGuides, setLocalGuides] = useState({});
   const [generatingFor, setGeneratingFor] = useState(null);
+  const [replacingFor, setReplacingFor] = useState(null);
 
-  if (!trip.itinerary?.length) {
+  // Local itinerary state so we can swap activities immediately
+  const [localItinerary, setLocalItinerary] = useState(null);
+  const itinerary = localItinerary || trip.itinerary;
+
+  if (!itinerary?.length) {
     return <div className="text-center py-10 text-muted-foreground">Itinerario non ancora generato</div>;
   }
 
@@ -36,10 +41,27 @@ export default function ItineraryTab({ trip, onGuideSaved }) {
     }
   };
 
+  const handleReplaceActivity = async (act, day) => {
+    setReplacingFor(act.name);
+    const alternative = await generateAlternativeActivity(act, day, trip);
+    // Replace in local itinerary
+    const newItinerary = itinerary.map((d) => {
+      if (d.day !== day.day) return d;
+      return {
+        ...d,
+        activities: d.activities.map((a) => a.name === act.name ? { ...alternative } : a),
+      };
+    });
+    setLocalItinerary(newItinerary);
+    setReplacingFor(null);
+    // Persist to DB
+    onItineraryUpdated?.(newItinerary);
+  };
+
   return (
     <>
       <div className="space-y-8">
-        {trip.itinerary.map((day) => (
+        {itinerary.map((day) => (
           <div key={day.day}>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 rounded-full bg-indigo-600 text-white text-sm font-bold flex items-center justify-center">
@@ -57,9 +79,10 @@ export default function ItineraryTab({ trip, onGuideSaved }) {
                 const Icon = config.icon;
                 const hasGuide = isGuidable(act);
                 const guideReady = hasGuide && !!guides[act.name] && generatingFor !== act.name;
+                const isReplacing = replacingFor === act.name;
 
                 return (
-                  <div key={i} className="bg-white rounded-2xl p-4 shadow-sm border">
+                  <div key={i} className={`bg-white rounded-2xl p-4 shadow-sm border transition-opacity ${isReplacing ? 'opacity-50' : ''}`}>
                     <div className="flex items-start gap-3">
                       <div className={`p-2 rounded-xl ${config.color} shrink-0`}>
                         <Icon className="w-4 h-4" />
@@ -116,6 +139,16 @@ export default function ItineraryTab({ trip, onGuideSaved }) {
                             >
                               <BookOpen className="w-3 h-3" />
                               {generatingFor === act.name ? 'Generando...' : guideReady ? 'Apri guida AI' : 'Guida AI'}
+                            </button>
+                          )}
+                          {act.type !== 'trasporto' && (
+                            <button
+                              onClick={() => handleReplaceActivity(act, day)}
+                              disabled={isReplacing}
+                              className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition-all disabled:opacity-50"
+                            >
+                              <RefreshCw className={`w-3 h-3 ${isReplacing ? 'animate-spin' : ''}`} />
+                              {isReplacing ? 'Cercando...' : 'Cambia'}
                             </button>
                           )}
                         </div>

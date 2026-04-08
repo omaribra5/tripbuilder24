@@ -67,6 +67,51 @@ Rispondi SOLO con il JSON richiesto.
   return result;
 }
 
+export async function generateAlternativeActivity(activity, day, trip) {
+  const otherActivities = (day.activities || [])
+    .filter((a) => a.name !== activity.name)
+    .map((a) => `- ${a.time} ${a.name} (${a.type})`)
+    .join('\n');
+
+  const prompt = `
+Sei un esperto di viaggi. L'utente sta visitando ${trip.destination} e vuole sostituire questa attività:
+- Orario: ${activity.time}
+- Nome: ${activity.name}
+- Tipo: ${activity.type}
+- Descrizione: ${activity.description || ''}
+
+Le altre attività di quel giorno sono (non devi ripetere queste né suggerire posti lontani da esse):
+${otherActivities}
+
+Suggerisci UN'ALTERNATIVA dello stesso tipo (${activity.type}) per lo stesso orario (${activity.time}), nello stesso quartiere o zona, che si integri bene con il resto del percorso giornaliero. Non suggerire posti che stiano dall'altra parte della città.
+
+Rispondi SOLO con il JSON richiesto.
+`;
+
+  const schema = {
+    type: 'object',
+    properties: {
+      time: { type: 'string' },
+      name: { type: 'string' },
+      description: { type: 'string' },
+      type: { type: 'string' },
+      duration_minutes: { type: 'number' },
+      tip: { type: 'string' },
+      lat: { type: 'number' },
+      lng: { type: 'number' },
+    }
+  };
+
+  const result = await base44.integrations.Core.InvokeLLM({
+    prompt,
+    response_json_schema: schema,
+    add_context_from_internet: true,
+    model: 'gemini_3_flash'
+  });
+
+  return result;
+}
+
 export async function generateDayGuides(trip, dayNumber) {
   const guides = {};
   const day = (trip.itinerary || []).find((d) => d.day === dayNumber);
