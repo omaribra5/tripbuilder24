@@ -28,6 +28,9 @@ ISTRUZIONI IMPORTANTI:
 4. Per ogni attività includi coordinate GPS (lat/lng) realistiche.
 5. Il tipo (type) può essere: "attrazione", "ristorante", "museo", "parco", "shopping", "trasporto".
 6. Per i ristoranti includi nel campo "tip" info su cucina, prezzo medio e perché è adatto all'utente.
+7. MOLTO IMPORTANTE - BOOKING URL: Per OGNI attività (musei, gite, escursioni, attrazioni, esperienze, spa, snorkeling, safari, crociere, ecc.) DEVI cercare su internet il miglior operatore specifico che organizza quell'attività nella destinazione, compatibile con il budget "${trip.budget}". Inserisci nel campo "booking_url" un link diretto a GetYourGuide, Viator, Airbnb Experiences o al sito ufficiale dell'operatore/attrazione. MAI lasciare booking_url vuoto per un'attrazione o esperienza prenotabile. Esempi: "https://www.getyourguide.com/s/?q=NOME+ATTIVITA+${encodeURIComponent(trip.destination)}" oppure link diretto se trovi l'operatore specifico.
+8. Per i ristoranti inserisci in booking_url il link a TripAdvisor o Google Maps del ristorante specifico (es. "https://www.tripadvisor.com/Search?q=NOME+RISTORANTE+${encodeURIComponent(trip.destination)}").
+9. Il nome dell'attività deve essere SPECIFICO: non "Gita in barca" ma "Gita in barca a vela con snorkeling con [Nome Operatore]", non "Massaggio rilassante" ma "Trattamento Hammam al [Nome Spa/Hotel specifico]". Usa internet per trovare operatori reali e verificati nella destinazione.
 
 ${!trip.has_accommodation ? `
 HOTEL: suggerisci 3 hotel adatti al budget "${trip.budget}" e ben posizionati rispetto all'itinerario. Includi perché sono consigliati e un link booking_url stile "https://www.booking.com/search.html?ss=NOME+HOTEL+${encodeURIComponent(trip.destination)}"
