@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Euro, Check, X } from 'lucide-react';
+import { createPortal } from 'react-dom';
 
 const CURRENCIES = ['EUR', 'USD', 'GBP', 'JPY', 'CHF'];
 
@@ -8,10 +9,35 @@ export default function ActivityExpenseButton({ actName, expenses = [], currency
   const [amount, setAmount] = useState('');
   const [cur, setCur] = useState(currency);
   const [note, setNote] = useState('');
+  const btnRef = useRef(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
 
   const total = expenses.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
 
-  const handleAdd = () => {
+  const handleOpen = (e) => {
+    e.stopPropagation();
+    const rect = btnRef.current.getBoundingClientRect();
+    setPos({
+      top: rect.bottom + window.scrollY + 6,
+      left: rect.left + window.scrollX,
+    });
+    setOpen(true);
+  };
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e) => {
+      if (!e.target.closest('[data-expense-popup]') && !e.target.closest('[data-expense-btn]')) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const handleAdd = (e) => {
+    e.stopPropagation();
     if (!amount) return;
     const entry = { amount: parseFloat(amount), currency: cur, note, date: new Date().toISOString().split('T')[0], label: actName };
     onSave([...expenses, entry]);
@@ -19,9 +45,11 @@ export default function ActivityExpenseButton({ actName, expenses = [], currency
   };
 
   return (
-    <div className="relative" onClick={(e) => e.stopPropagation()}>
+    <>
       <button
-        onClick={() => setOpen(!open)}
+        ref={btnRef}
+        data-expense-btn
+        onClick={handleOpen}
         className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-all ${
           total > 0
             ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
@@ -32,8 +60,13 @@ export default function ActivityExpenseButton({ actName, expenses = [], currency
         {total > 0 ? `${total.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}` : 'Spesa'}
       </button>
 
-      {open && (
-        <div className="absolute top-full mt-1 left-0 z-50 bg-white border rounded-2xl shadow-xl p-3 min-w-[240px] space-y-2">
+      {open && createPortal(
+        <div
+          data-expense-popup
+          style={{ position: 'absolute', top: pos.top, left: pos.left, zIndex: 9999 }}
+          className="bg-white border rounded-2xl shadow-2xl p-3 min-w-[250px] space-y-2"
+          onClick={(e) => e.stopPropagation()}
+        >
           <p className="text-xs font-bold text-gray-700 truncate">💶 {actName}</p>
           <div className="flex gap-1.5">
             <input
@@ -45,7 +78,7 @@ export default function ActivityExpenseButton({ actName, expenses = [], currency
               placeholder="Importo"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+              onKeyDown={(e) => e.key === 'Enter' && handleAdd(e)}
             />
             <select
               className="border rounded-lg px-1.5 py-1.5 text-sm focus:outline-none"
@@ -67,15 +100,22 @@ export default function ActivityExpenseButton({ actName, expenses = [], currency
             </div>
           )}
           <div className="flex gap-2">
-            <button onClick={handleAdd} className="flex-1 bg-indigo-600 text-white text-xs font-semibold rounded-lg py-1.5 hover:bg-indigo-700 flex items-center justify-center gap-1">
+            <button
+              onClick={handleAdd}
+              className="flex-1 bg-indigo-600 text-white text-xs font-semibold rounded-lg py-1.5 hover:bg-indigo-700 flex items-center justify-center gap-1"
+            >
               <Check className="w-3 h-3" /> Aggiungi
             </button>
-            <button onClick={() => setOpen(false)} className="bg-gray-100 text-gray-600 text-xs rounded-lg px-3 py-1.5 hover:bg-gray-200">
+            <button
+              onClick={(e) => { e.stopPropagation(); setOpen(false); }}
+              className="bg-gray-100 text-gray-600 text-xs rounded-lg px-3 py-1.5 hover:bg-gray-200"
+            >
               <X className="w-3 h-3" />
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
-    </div>
+    </>
   );
 }
