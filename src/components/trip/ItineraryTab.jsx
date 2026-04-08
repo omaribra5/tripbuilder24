@@ -78,6 +78,24 @@ export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, o
 
   const itinerary = localItinerary || trip.itinerary;
 
+  // On mount, scroll to the next activity after the last marked one
+  useEffect(() => {
+    if (!itinerary?.length) return;
+    const allActivities = itinerary.flatMap((d) => d.activities || []);
+    let lastMarkedIndex = -1;
+    allActivities.forEach((a, i) => {
+      const s = activityStatus[a.name];
+      if (s === 'done' || s === 'skip') lastMarkedIndex = i;
+    });
+    if (lastMarkedIndex === -1) return;
+    const targetAct = allActivities[lastMarkedIndex + 1] || allActivities[lastMarkedIndex];
+    setTimeout(() => {
+      if (targetAct && activityRefs.current[targetAct.name]) {
+        activityRefs.current[targetAct.name].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 300);
+  }, []);
+
   if (!itinerary?.length) {
     return <div className="text-center py-10 text-muted-foreground">Itinerario non ancora generato</div>;
   }
