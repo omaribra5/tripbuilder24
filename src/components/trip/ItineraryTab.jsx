@@ -67,27 +67,7 @@ export default function ItineraryTab({ trip, onGuideSaved }) {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-sm font-semibold text-indigo-600">{act.time}</span>
-                          {act.booking_url ? (
-                            <a
-                              href={act.booking_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="font-semibold text-gray-900 hover:text-indigo-600 flex items-center gap-1 underline underline-offset-2"
-                            >
-                              {act.name}
-                              <ExternalLink className="w-3 h-3 shrink-0" />
-                            </a>
-                          ) : (
-                            <a
-                              href={`https://www.google.com/search?q=${encodeURIComponent(act.name + ' ' + trip.destination)}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="font-semibold text-gray-900 hover:text-indigo-600 flex items-center gap-1"
-                            >
-                              {act.name}
-                              <ExternalLink className="w-3 h-3 shrink-0 opacity-40" />
-                            </a>
-                          )}
+                          <span className="font-semibold text-gray-900">{act.name}</span>
                           <Badge variant="secondary" className={config.color}>{config.badge}</Badge>
                         </div>
                         {act.description && (
@@ -103,22 +83,42 @@ export default function ItineraryTab({ trip, onGuideSaved }) {
                             💡 {act.tip}
                           </div>
                         )}
-                        {hasGuide && (
-                          <button
-                            onClick={() => handleGuideClick(act)}
-                            disabled={generatingFor === act.name}
-                            className={`mt-3 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full transition-all ${
-                              guideReady
-                                ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                                : generatingFor === act.name
-                                ? 'bg-indigo-100 text-indigo-400 border border-indigo-200'
-                                : 'bg-indigo-50 text-indigo-600 border border-indigo-200 hover:bg-indigo-100'
-                            }`}
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <a
+                            href={`https://www.google.com/maps/search/${encodeURIComponent(act.name + ' ' + trip.destination)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-all"
                           >
-                            <BookOpen className="w-3 h-3" />
-                            {generatingFor === act.name ? 'Generando...' : guideReady ? 'Apri guida AI' : 'Guida AI'}
-                          </button>
-                        )}
+                            <MapPin className="w-3 h-3" />
+                            Google Maps
+                          </a>
+                          <a
+                            href={`https://www.google.com/search?q=${encodeURIComponent('prenota ' + act.name + ' ' + trip.destination)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-all"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            Prenota / Recensioni
+                          </a>
+                          {hasGuide && (
+                            <button
+                              onClick={() => handleGuideClick(act)}
+                              disabled={generatingFor === act.name}
+                              className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full transition-all ${
+                                guideReady
+                                  ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                                  : generatingFor === act.name
+                                  ? 'bg-indigo-100 text-indigo-400 border border-indigo-200'
+                                  : 'bg-indigo-50 text-indigo-600 border border-indigo-200 hover:bg-indigo-100'
+                              }`}
+                            >
+                              <BookOpen className="w-3 h-3" />
+                              {generatingFor === act.name ? 'Generando...' : guideReady ? 'Apri guida AI' : 'Guida AI'}
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
