@@ -10,8 +10,36 @@ async function fetchCities(query) {
   return data.filter((item) => ['city', 'town', 'village', 'municipality'].includes(item.type) || item.addresstype === 'city');
 }
 
+const MAX_DAYS = 15;
+
+function addDays(dateStr, days) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+}
+
+function daysDiff(start, end) {
+  return Math.round((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24));
+}
+
 export default function StepBasicInfo({ data, update, onNext }) {
-  const canNext = data.destination && data.start_date && data.end_date;
+  const tooLong = data.start_date && data.end_date && daysDiff(data.start_date, data.end_date) > MAX_DAYS;
+  const canNext = data.destination && data.start_date && data.end_date && !tooLong;
+
+  const handleEndDate = (val) => {
+    if (data.start_date && daysDiff(data.start_date, val) > MAX_DAYS) {
+      update({ end_date: addDays(data.start_date, MAX_DAYS) });
+    } else {
+      update({ end_date: val });
+    }
+  };
+
+  const handleStartDate = (val) => {
+    update({ start_date: val });
+    if (data.end_date && daysDiff(val, data.end_date) > MAX_DAYS) {
+      update({ start_date: val, end_date: addDays(val, MAX_DAYS) });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -51,7 +79,7 @@ export default function StepBasicInfo({ data, update, onNext }) {
               type="date"
               className="mt-1 w-full border border-input rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               value={data.start_date}
-              onChange={(e) => update({ start_date: e.target.value })}
+              onChange={(e) => handleStartDate(e.target.value)}
             />
           </div>
           <div>
@@ -60,10 +88,14 @@ export default function StepBasicInfo({ data, update, onNext }) {
               type="date"
               className="mt-1 w-full border border-input rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               value={data.end_date}
-              onChange={(e) => update({ end_date: e.target.value })}
+              onChange={(e) => handleEndDate(e.target.value)}
             />
           </div>
         </div>
+
+        {tooLong && (
+          <p className="text-sm text-red-500">Il viaggio non può superare i {MAX_DAYS} giorni.</p>
+        )}
 
         <div>
           <Label>Con chi viaggi?</Label>
