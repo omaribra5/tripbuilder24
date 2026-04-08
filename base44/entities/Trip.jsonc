@@ -152,6 +152,10 @@
       "type": "object",
       "description": "AI-generated guides for each visitable activity, keyed by activity name"
     },
+    "activity_status": {
+      "type": "object",
+      "description": "User-set status for each activity (done/skip), keyed by activity name"
+    },
     "hotel_suggestions": {
       "type": "array",
       "description": "AI hotel suggestions",

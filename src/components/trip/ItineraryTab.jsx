@@ -67,13 +67,13 @@ function StatusDropdown({ status, onChange }) {
   );
 }
 
-export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated }) {
+export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, onStatusSaved }) {
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [localGuides, setLocalGuides] = useState({});
   const [generatingFor, setGeneratingFor] = useState(null);
   const [replacingFor, setReplacingFor] = useState(null);
   const [localItinerary, setLocalItinerary] = useState(null);
-  const [activityStatus, setActivityStatus] = useState({});
+  const [activityStatus, setActivityStatus] = useState(trip.activity_status || {});
   const activityRefs = useRef({});
 
   const itinerary = localItinerary || trip.itinerary;
@@ -112,7 +112,9 @@ export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated })
   const handleStatusChange = (actName, value) => {
     setActivityStatus((prev) => {
       const updated = { ...prev, [actName]: value };
-      // Find the next activity after the last done/skip and scroll to it
+      // Persist to DB
+      onStatusSaved?.(updated);
+      // Scroll to next activity
       setTimeout(() => {
         const allActivities = (itinerary || []).flatMap((d) => d.activities || []);
         let lastMarkedIndex = -1;
