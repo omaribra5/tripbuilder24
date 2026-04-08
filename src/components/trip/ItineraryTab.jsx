@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Clock, MapPin, Utensils, ShoppingBag, TreePine, Building2, BookOpen } from 'lucide-react';
+import { Clock, MapPin, Utensils, ShoppingBag, TreePine, Building2, BookOpen, ExternalLink } from 'lucide-react';
 import { isGuidable, generateActivityGuide } from '@/lib/guideGenerator';
 import ActivityGuideModal from '@/components/trip/ActivityGuideModal';
 
@@ -67,7 +67,27 @@ export default function ItineraryTab({ trip, onGuideSaved }) {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-sm font-semibold text-indigo-600">{act.time}</span>
-                          <h4 className="font-semibold text-gray-900">{act.name}</h4>
+                          {act.booking_url ? (
+                            <a
+                              href={act.booking_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-semibold text-gray-900 hover:text-indigo-600 flex items-center gap-1 underline underline-offset-2"
+                            >
+                              {act.name}
+                              <ExternalLink className="w-3 h-3 shrink-0" />
+                            </a>
+                          ) : (
+                            <a
+                              href={`https://www.google.com/search?q=${encodeURIComponent(act.name + ' ' + trip.destination)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-semibold text-gray-900 hover:text-indigo-600 flex items-center gap-1"
+                            >
+                              {act.name}
+                              <ExternalLink className="w-3 h-3 shrink-0 opacity-40" />
+                            </a>
+                          )}
                           <Badge variant="secondary" className={config.color}>{config.badge}</Badge>
                         </div>
                         {act.description && (
