@@ -13,11 +13,14 @@ import AudioTourTab from '@/components/trip/AudioTourTab';
 import { generateTripWithAI } from '@/lib/tripGenerator';
 import { generateDayGuides, generateActivityGuide, isGuidable } from '@/lib/guideGenerator';
 import { exportTripPDF } from '@/lib/pdfExporter';
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/i18n';
 
 export default function TripDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { language } = useLanguage();
   const [isGenerating, setIsGenerating] = useState(false);
 
   const { data: trip, isLoading } = useQuery({
@@ -55,8 +58,8 @@ export default function TripDetail() {
       <div className="min-h-screen bg-gradient-to-br from-sky-900 via-blue-800 to-indigo-900 flex items-center justify-center text-white">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-yellow-300 mx-auto mb-4" />
-          <p className="text-xl font-semibold">{isGenerating ? "L'AI sta pianificando il tuo viaggio..." : 'Caricamento...'}</p>
-          {isGenerating && <p className="text-blue-200 mt-2">Potrebbe richiedere qualche secondo</p>}
+          <p className="text-xl font-semibold">{isGenerating ? (language === 'it' ? "L'AI sta pianificando il tuo viaggio..." : t(language, 'home_cta_new') + '...') : t(language, 'back') + '...'}</p>
+          {isGenerating && <p className="text-blue-200 mt-2">{language === 'it' ? 'Potrebbe richiedere qualche secondo' : '...'}</p>}
         </div>
       </div>
     );
@@ -75,7 +78,7 @@ export default function TripDetail() {
         <div className="relative z-10 w-full px-6 pb-6 flex items-end justify-between">
           <div>
             <button onClick={() => navigate('/my-trips')} className="text-white/80 hover:text-white flex items-center gap-1 text-sm mb-2">
-              <ArrowLeft className="w-4 h-4" /> I miei viaggi
+              <ArrowLeft className="w-4 h-4" /> {t(language, 'my_trips_title')}
             </button>
             <h1 className="text-3xl font-bold text-white">{trip.destination}</h1>
             {trip.country && <p className="text-white/80">{trip.country}</p>}
@@ -99,16 +102,16 @@ export default function TripDetail() {
               <MapPin className="w-3 h-3" /> Tour
             </TabsTrigger>
             <TabsTrigger value="map" className="gap-1 text-xs">
-              🗺️ Mappa
+              🗺️ {t(language, 'tab_map')}
             </TabsTrigger>
             <TabsTrigger value="hotels" className="gap-1 text-xs">
-              <Hotel className="w-3 h-3" /> Hotel
+              <Hotel className="w-3 h-3" /> {t(language, 'tab_hotels')}
             </TabsTrigger>
             <TabsTrigger value="airport" className="gap-1 text-xs">
-              <Plane className="w-3 h-3" /> Aeroporto
+              <Plane className="w-3 h-3" /> {t(language, 'tab_airport')}
             </TabsTrigger>
             <TabsTrigger value="audio" className="gap-1 text-xs">
-              <Mic className="w-3 h-3" /> Audio
+              <Mic className="w-3 h-3" /> {t(language, 'tab_audio')}
             </TabsTrigger>
           </TabsList>
 

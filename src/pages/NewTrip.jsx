@@ -9,11 +9,19 @@ import StepAirport from '@/components/trip/StepAirport';
 import StepGenerating from '@/components/trip/StepGenerating';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-const STEPS = ['Destinazione', 'Preferenze', 'Cibo', 'Alloggio', 'Aeroporto'];
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/i18n';
 
 export default function NewTrip() {
   const navigate = useNavigate();
+  const { language } = useLanguage();
+  const STEPS = [
+    t(language, 'step_destination'),
+    t(language, 'step_preferences'),
+    t(language, 'step_food'),
+    t(language, 'step_accommodation'),
+    t(language, 'step_airport'),
+  ];
   const [step, setStep] = useState(0);
   const [generating, setGenerating] = useState(false);
   const [tripData, setTripData] = useState({
@@ -71,7 +79,7 @@ export default function NewTrip() {
           </Button>
         )}
         <div className="flex-1">
-          <div className="text-sm text-muted-foreground">Passo {step + 1} di {STEPS.length}</div>
+          <div className="text-sm text-muted-foreground">{t(language, 'step_label')} {step + 1} {t(language, 'step_of')} {STEPS.length}</div>
           <div className="font-semibold">{STEPS[step]}</div>
         </div>
       </div>

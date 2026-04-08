@@ -4,9 +4,16 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Plus, MapPin, Calendar, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
-import { it } from 'date-fns/locale';
+import { it, enUS, fr, de, es, pt } from 'date-fns/locale';
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/i18n';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+
+const DATE_LOCALES = { it, en: enUS, fr, de, es, pt };
 
 export default function MyTrips() {
+  const { language } = useLanguage();
+  const dateLocale = DATE_LOCALES[language] || enUS;
   const { data: trips = [], isLoading } = useQuery({
     queryKey: ['trips'],
     queryFn: () => base44.entities.Trip.list('-created_date'),
@@ -17,15 +24,17 @@ export default function MyTrips() {
       <div className="max-w-4xl mx-auto px-6 py-10">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">I miei viaggi</h1>
-            <p className="text-muted-foreground mt-1">Tutti i tuoi itinerari salvati</p>
+            <h1 className="text-3xl font-bold text-gray-900">{t(language, 'my_trips_title')}</h1>
           </div>
-          <Link to="/new-trip">
-            <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
-              <Plus className="w-4 h-4" />
-              Nuovo viaggio
-            </Button>
-          </Link>
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <Link to="/new-trip">
+              <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
+                <Plus className="w-4 h-4" />
+                {t(language, 'my_trips_new')}
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {isLoading && (
@@ -37,10 +46,9 @@ export default function MyTrips() {
         {!isLoading && trips.length === 0 && (
           <div className="text-center py-20">
             <MapPin className="w-12 h-12 text-indigo-300 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Nessun viaggio ancora</h2>
-            <p className="text-muted-foreground mb-6">Pianifica il tuo primo viaggio con l'AI!</p>
+            <h2 className="text-xl font-semibold text-gray-700 mb-2">{t(language, 'my_trips_empty')}</h2>
             <Link to="/new-trip">
-              <Button className="bg-indigo-600 hover:bg-indigo-700">Inizia ora</Button>
+              <Button className="bg-indigo-600 hover:bg-indigo-700">{t(language, 'my_trips_new')}</Button>
             </Link>
           </div>
         )}
@@ -62,8 +70,8 @@ export default function MyTrips() {
                   {trip.start_date && (
                     <div className="flex items-center gap-1 text-sm text-muted-foreground mt-2">
                       <Calendar className="w-4 h-4" />
-                      {format(new Date(trip.start_date), 'd MMM yyyy', { locale: it })}
-                      {trip.end_date && ` → ${format(new Date(trip.end_date), 'd MMM yyyy', { locale: it })}`}
+                      {format(new Date(trip.start_date), 'd MMM yyyy', { locale: dateLocale })}
+                      {trip.end_date && ` → ${format(new Date(trip.end_date), 'd MMM yyyy', { locale: dateLocale })}`}
                     </div>
                   )}
                   <div className={`inline-block mt-3 px-2 py-1 rounded-full text-xs font-medium ${

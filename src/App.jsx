@@ -5,6 +5,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import { LanguageProvider, useLanguage } from '@/lib/LanguageContext';
+import LanguagePicker from '@/components/LanguagePicker';
 import Home from '@/pages/Home';
 import NewTrip from '@/pages/NewTrip';
 import MyTrips from '@/pages/MyTrips';
@@ -41,16 +43,25 @@ const AuthenticatedApp = () => {
   );
 };
 
+const AppWithLanguage = () => {
+  const { language } = useLanguage();
+  if (!language) return null;
+  if (language === '__pick__') return <LanguagePicker />;
+  return <AuthenticatedApp />;
+};
+
 function App() {
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
-        <Router>
-          <AuthenticatedApp />
-        </Router>
-        <Toaster />
-      </QueryClientProvider>
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <QueryClientProvider client={queryClientInstance}>
+          <Router>
+            <AppWithLanguage />
+          </Router>
+          <Toaster />
+        </QueryClientProvider>
+      </AuthProvider>
+    </LanguageProvider>
   )
 }
 
