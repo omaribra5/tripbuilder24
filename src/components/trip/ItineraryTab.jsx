@@ -73,8 +73,8 @@ export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated })
   const [generatingFor, setGeneratingFor] = useState(null);
   const [replacingFor, setReplacingFor] = useState(null);
   const [localItinerary, setLocalItinerary] = useState(null);
-  // activityStatus: { [actName]: 'done' | 'skip' | null }
   const [activityStatus, setActivityStatus] = useState({});
+  const activityRefs = useRef({});
 
   const itinerary = localItinerary || trip.itinerary;
 
@@ -110,7 +110,23 @@ export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated })
   };
 
   const handleStatusChange = (actName, value) => {
-    setActivityStatus((prev) => ({ ...prev, [actName]: value }));
+    setActivityStatus((prev) => {
+      const updated = { ...prev, [actName]: value };
+      // Find the next activity after the last done/skip and scroll to it
+      setTimeout(() => {
+        const allActivities = (itinerary || []).flatMap((d) => d.activities || []);
+        let lastMarkedIndex = -1;
+        allActivities.forEach((a, i) => {
+          const s = updated[a.name];
+          if (s === 'done' || s === 'skip') lastMarkedIndex = i;
+        });
+        const nextAct = allActivities[lastMarkedIndex + 1];
+        if (nextAct && activityRefs.current[nextAct.name]) {
+          activityRefs.current[nextAct.name].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+      return updated;
+    });
   };
 
   return (
@@ -148,6 +164,7 @@ export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated })
                 return (
                   <div
                     key={i}
+                    ref={(el) => { activityRefs.current[act.name] = el; }}
                     onClick={() => handleBoxClick(act)}
                     className={`rounded-2xl p-4 shadow-sm border transition-all ${cardClass} ${isReplacing ? 'opacity-40' : ''} ${hasGuide ? 'cursor-pointer hover:shadow-md' : ''}`}
                   >
