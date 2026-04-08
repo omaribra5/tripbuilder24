@@ -13,9 +13,12 @@ export default function ActivityGuideModal({ activity, guide, onClose }) {
         
         {/* Hero Image */}
         <div className="relative h-52 bg-gradient-to-br from-indigo-500 to-sky-600 shrink-0">
-          {guide?.photo_url && (
-            <img src={guide.photo_url} alt={activity.name} className="absolute inset-0 w-full h-full object-cover" />
-          )}
+          <img
+            src={`https://source.unsplash.com/featured/800x400/?${encodeURIComponent(activity.name)},travel`}
+            alt={activity.name}
+            className="absolute inset-0 w-full h-full object-cover"
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
           <button
             onClick={onClose}
@@ -99,16 +102,14 @@ export default function ActivityGuideModal({ activity, guide, onClose }) {
                       </button>
                       {activeStep === i && (
                         <div className="pb-4 space-y-3">
-                          {step.photo_url && (
-                            <div className="mx-4 rounded-xl overflow-hidden h-40">
-                              <img
-                                src={step.photo_url}
-                                alt={step.title}
-                                className="w-full h-full object-cover"
-                                onError={(e) => { e.target.style.display = 'none'; }}
-                              />
-                            </div>
-                          )}
+                          <div className="mx-4 rounded-xl overflow-hidden h-36 bg-indigo-50">
+                            <img
+                              src={`https://source.unsplash.com/featured/600x300/?${encodeURIComponent(step.title + ' ' + activity.name)},travel`}
+                              alt={step.title}
+                              className="w-full h-full object-cover"
+                              onError={(e) => { e.target.parentElement.style.display = 'none'; }}
+                            />
+                          </div>
                           <div className="px-4 ml-6 space-y-2">
                             <p className="text-sm text-gray-700 leading-relaxed">{step.description}</p>
                             {step.tip && (
