@@ -67,13 +67,12 @@ export default function Home() {
               {trips.map((trip) => (
                 <Link key={trip.id} to={`/trip/${trip.id}`}>
                   <div className="bg-white/10 backdrop-blur rounded-2xl overflow-hidden hover:bg-white/20 transition-all text-left">
-                    {trip.cover_image ? (
-                      <img src={trip.cover_image} alt={trip.destination} className="w-full h-28 object-cover" />
-                    ) : (
-                      <div className="w-full h-28 bg-gradient-to-br from-indigo-400/50 to-sky-400/50 flex items-center justify-center">
-                        <MapPin className="w-8 h-8 text-white/60" />
-                      </div>
-                    )}
+                    <img
+                      src={trip.cover_image || `https://source.unsplash.com/featured/400x200/?${encodeURIComponent(trip.destination)},city,travel`}
+                      alt={trip.destination}
+                      className="w-full h-28 object-cover"
+                      onError={(e) => { e.target.style.display='none'; }}
+                    />
                     <div className="p-3">
                       <p className="font-bold text-white truncate">{trip.destination}</p>
                       {trip.start_date && (

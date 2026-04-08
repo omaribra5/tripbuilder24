@@ -74,13 +74,12 @@ export default function MyTrips() {
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
-                {trip.cover_image ? (
-                  <img src={trip.cover_image} alt={trip.destination} className="w-full h-40 object-cover" />
-                ) : (
-                  <div className="w-full h-40 bg-gradient-to-br from-indigo-400 to-sky-400 flex items-center justify-center">
-                    <MapPin className="w-10 h-10 text-white" />
-                  </div>
-                )}
+                <img
+                  src={trip.cover_image || `https://source.unsplash.com/featured/600x300/?${encodeURIComponent(trip.destination)},city,travel`}
+                  alt={trip.destination}
+                  className="w-full h-40 object-cover"
+                  onError={(e) => { e.target.style.display='none'; }}
+                />
                 <div className="p-4">
                   <h3 className="font-bold text-lg text-gray-900">{trip.destination}</h3>
                   {trip.country && <p className="text-muted-foreground text-sm">{trip.country}</p>}
