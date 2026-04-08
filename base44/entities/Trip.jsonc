@@ -156,6 +156,48 @@
       "type": "object",
       "description": "User-set status for each activity (done/skip), keyed by activity name"
     },
+    "activity_expenses": {
+      "type": "object",
+      "description": "Expenses per activity, keyed by activity name. Each value is an array of {amount, currency, note, date}"
+    },
+    "extra_expenses": {
+      "type": "array",
+      "description": "Extra/manual expenses added by the user",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "budget_limit": {
+      "type": "number",
+      "description": "User-defined total budget limit in chosen currency"
+    },
+    "budget_currency": {
+      "type": "string",
+      "description": "Currency used for budget tracking e.g. EUR"
+    },
     "hotel_suggestions": {
       "type": "array",
       "description": "AI hotel suggestions",

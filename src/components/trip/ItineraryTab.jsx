@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Clock, MapPin, Utensils, ShoppingBag, TreePine, Building2, ExternalLink, RefreshCw, CheckCircle2, MinusCircle, ChevronDown } from 'lucide-react';
 import { isGuidable, generateActivityGuide, generateAlternativeActivity } from '@/lib/guideGenerator';
 import ActivityGuideModal from '@/components/trip/ActivityGuideModal';
+import ActivityExpenseButton from '@/components/trip/ActivityExpenseButton';
 
 const typeConfig = {
   ristorante: { icon: Utensils, color: 'bg-orange-100 text-orange-700', badge: 'Ristorante' },
@@ -67,13 +68,14 @@ function StatusDropdown({ status, onChange }) {
   );
 }
 
-export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, onStatusSaved }) {
+export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, onStatusSaved, onExpenseSaved }) {
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [localGuides, setLocalGuides] = useState({});
   const [generatingFor, setGeneratingFor] = useState(null);
   const [replacingFor, setReplacingFor] = useState(null);
   const [localItinerary, setLocalItinerary] = useState(null);
   const [activityStatus, setActivityStatus] = useState(trip.activity_status || {});
+  const [activityExpenses, setActivityExpenses] = useState(trip.activity_expenses || {});
   const activityRefs = useRef({});
 
   const itinerary = localItinerary || trip.itinerary;
@@ -221,6 +223,16 @@ export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, o
                           <StatusDropdown
                             status={status}
                             onChange={(val) => handleStatusChange(act.name, val)}
+                          />
+                          <ActivityExpenseButton
+                            actName={act.name}
+                            expenses={activityExpenses[act.name] || []}
+                            currency={trip.budget_currency || 'EUR'}
+                            onSave={(entries) => {
+                              const updated = { ...activityExpenses, [act.name]: entries };
+                              setActivityExpenses(updated);
+                              onExpenseSaved?.(updated);
+                            }}
                           />
                           {status !== 'skip' && (
                             <>

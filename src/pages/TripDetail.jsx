@@ -4,12 +4,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2, Download, MapPin, UtensilsCrossed, Hotel, Plane, Mic } from 'lucide-react';
+import { ArrowLeft, Loader2, Download, MapPin, Hotel, Plane, Wallet } from 'lucide-react';
 import ItineraryTab from '@/components/trip/ItineraryTab';
 import MapTab from '@/components/trip/MapTab';
 import HotelsTab from '@/components/trip/HotelsTab';
 import AirportTab from '@/components/trip/AirportTab';
-import AudioTourTab from '@/components/trip/AudioTourTab';
+import ExpensesTab from '@/components/trip/ExpensesTab';
 import { generateTripWithAI } from '@/lib/tripGenerator';
 import { generateDayGuides, generateActivityGuide, isGuidable } from '@/lib/guideGenerator';
 import { exportTripPDF } from '@/lib/pdfExporter';
@@ -110,8 +110,8 @@ export default function TripDetail() {
             <TabsTrigger value="airport" className="gap-1 text-xs">
               <Plane className="w-3 h-3" /> {t(language, 'tab_airport')}
             </TabsTrigger>
-            <TabsTrigger value="audio" className="gap-1 text-xs">
-              <Mic className="w-3 h-3" /> {t(language, 'tab_audio')}
+            <TabsTrigger value="expenses" className="gap-1 text-xs">
+              <Wallet className="w-3 h-3" /> Budget
             </TabsTrigger>
           </TabsList>
 
@@ -121,6 +121,7 @@ export default function TripDetail() {
               onGuideSaved={(activity_guides) => updateMutation.mutate({ activity_guides })}
               onItineraryUpdated={(itinerary) => updateMutation.mutate({ itinerary })}
               onStatusSaved={(activity_status) => updateMutation.mutate({ activity_status })}
+              onExpenseSaved={(activity_expenses) => updateMutation.mutate({ activity_expenses })}
             />
           </TabsContent>
           <TabsContent value="map">
@@ -132,8 +133,11 @@ export default function TripDetail() {
           <TabsContent value="airport">
             <AirportTab trip={trip} />
           </TabsContent>
-          <TabsContent value="audio">
-            <AudioTourTab trip={trip} />
+          <TabsContent value="expenses">
+            <ExpensesTab
+              trip={trip}
+              onSave={(data) => updateMutation.mutate(data)}
+            />
           </TabsContent>
         </Tabs>
       </div>
