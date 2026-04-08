@@ -98,13 +98,25 @@ export default function ActivityGuideModal({ activity, guide, onClose }) {
                         />
                       </button>
                       {activeStep === i && (
-                        <div className="px-4 pb-4 ml-10 space-y-2">
-                          <p className="text-sm text-gray-700 leading-relaxed">{step.description}</p>
-                          {step.tip && (
-                            <div className="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2 text-xs text-amber-700">
-                              💡 {step.tip}
+                        <div className="pb-4 space-y-3">
+                          {step.photo_url && (
+                            <div className="mx-4 rounded-xl overflow-hidden h-40">
+                              <img
+                                src={step.photo_url}
+                                alt={step.title}
+                                className="w-full h-full object-cover"
+                                onError={(e) => { e.target.style.display = 'none'; }}
+                              />
                             </div>
                           )}
+                          <div className="px-4 ml-6 space-y-2">
+                            <p className="text-sm text-gray-700 leading-relaxed">{step.description}</p>
+                            {step.tip && (
+                              <div className="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2 text-xs text-amber-700">
+                                💡 {step.tip}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>

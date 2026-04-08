@@ -17,6 +17,8 @@ La guida deve:
 4. Aggiungere consigli pratici (orari migliori, cosa portare, come evitare le code, ecc.)
 5. Concludere con un consiglio speciale o un segreto da insider
 
+IMPORTANTE per le foto: per ogni punto del percorso (visit_steps), includi un campo "photo_url" con un URL reale e accessibile pubblicamente di una foto che mostra quel preciso elemento o luogo. Usa URL di Wikimedia Commons (https://upload.wikimedia.org/...) o altri siti con immagini libere. Le foto devono essere pertinenti e specifiche (es. per la "Colonna del Parco Güell" usa la foto di quelle colonne specifiche, non del parco in generale). Includi anche una photo_url principale per l'intera attrazione.
+
 Scrivi in modo vivace, personale e coinvolgente, come una vera guida turistica.
 Usa emoji sparingly per rendere il testo più leggibile.
 Lunghezza: dettagliata ma non eccessiva (circa 600-800 parole totali).
@@ -36,7 +38,8 @@ Rispondi SOLO con il JSON richiesto.
             step_number: { type: 'number' },
             title: { type: 'string' },
             description: { type: 'string' },
-            tip: { type: 'string' }
+            tip: { type: 'string' },
+            photo_url: { type: 'string', description: 'A real, publicly accessible photo URL (Wikimedia Commons or similar) showing this specific spot/element' }
           }
         }
       },
