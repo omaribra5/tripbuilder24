@@ -153,6 +153,8 @@ export const translations = {
     activity_expense_count: 'spesa/e',
     activity_expense_total: 'Totale',
     activity_expense_add: 'Aggiungi',
+    transit_toggle: 'Mostra trasporti pubblici tra le tappe',
+    transit_active: 'Link ai mezzi pubblici attivi',
     // Map
     map_no_itinerary: 'La mappa sarà disponibile dopo la generazione dell\'itinerario',
     map_no_coords: 'Nessuna attività con coordinate per questo giorno',
@@ -376,6 +378,8 @@ export const translations = {
     activity_expense_count: 'expense(s)',
     activity_expense_total: 'Total',
     activity_expense_add: 'Add',
+    transit_toggle: 'Show public transport between stops',
+    transit_active: 'Public transport links active',
   },
   fr: {
     home_tagline: 'Votre guide touristique AI',
@@ -552,6 +556,8 @@ export const translations = {
     activity_expense_count: 'dépense(s)',
     activity_expense_total: 'Total',
     activity_expense_add: 'Ajouter',
+    transit_toggle: 'Afficher les transports en commun entre les étapes',
+    transit_active: 'Liens transports en commun actifs',
   },
   de: {
     home_tagline: 'Dein KI-Reiseführer',
@@ -728,6 +734,8 @@ export const translations = {
     activity_expense_count: 'Ausgabe(n)',
     activity_expense_total: 'Gesamt',
     activity_expense_add: 'Hinzufügen',
+    transit_toggle: 'Öffentliche Verkehrsmittel zwischen Stopps anzeigen',
+    transit_active: 'ÖPNV-Links aktiv',
   },
   es: {
     home_tagline: 'Tu guía turística con IA',
@@ -904,6 +912,8 @@ export const translations = {
     activity_expense_count: 'gasto(s)',
     activity_expense_total: 'Total',
     activity_expense_add: 'Añadir',
+    transit_toggle: 'Mostrar transporte público entre paradas',
+    transit_active: 'Links de transporte público activos',
   },
   pt: {
     home_tagline: 'O seu guia turístico com IA',
@@ -1080,6 +1090,8 @@ export const translations = {
     activity_expense_count: 'despesa(s)',
     activity_expense_total: 'Total',
     activity_expense_add: 'Adicionar',
+    transit_toggle: 'Mostrar transportes públicos entre paragens',
+    transit_active: 'Links de transporte público ativos',
   },
   ja: {
     home_tagline: 'AIによる旅行ガイド',
@@ -1256,6 +1268,8 @@ export const translations = {
     activity_expense_count: '件',
     activity_expense_total: '合計',
     activity_expense_add: '追加',
+    transit_toggle: '各スポット間の公共交通機関を表示',
+    transit_active: '公共交通機関リンク有効',
   },
   zh: {
     home_tagline: 'AI旅行指南',
@@ -1432,6 +1446,8 @@ export const translations = {
     activity_expense_count: 'مصروف/مصاريف',
     activity_expense_total: 'الإجمالي',
     activity_expense_add: 'إضافة',
+    transit_toggle: '显示景点间公共交通',
+    transit_active: '公共交通链接已启用',
   },
   ar: {
     home_tagline: 'دليلك السياحي بالذكاء الاصطناعي',
@@ -1608,6 +1624,8 @@ export const translations = {
     activity_expense_count: 'مصروف/مصاريف',
     activity_expense_total: 'الإجمالي',
     activity_expense_add: 'إضافة',
+    transit_toggle: 'عرض المواصلات العامة بين المحطات',
+    transit_active: 'روابط المواصلات العامة نشطة',
   },
   ru: {
     home_tagline: 'Ваш AI-путеводитель',
@@ -1784,6 +1802,8 @@ export const translations = {
     activity_expense_count: 'расход(ов)',
     activity_expense_total: 'Итого',
     activity_expense_add: 'Добавить',
+    transit_toggle: 'Показать общественный транспорт между остановками',
+    transit_active: 'Ссылки на общественный транспорт активны',
   },
 };
 

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Clock, MapPin, Utensils, ShoppingBag, TreePine, Building2, ExternalLink, RefreshCw, CheckCircle2, MinusCircle, ChevronDown } from 'lucide-react';
+import { Clock, MapPin, Utensils, ShoppingBag, TreePine, Building2, ExternalLink, RefreshCw, CheckCircle2, MinusCircle, ChevronDown, Bus } from 'lucide-react';
 import { isGuidable, generateActivityGuide, generateAlternativeActivity } from '@/lib/guideGenerator';
 import ActivityGuideModal from '@/components/trip/ActivityGuideModal';
 import ActivityExpenseButton from '@/components/trip/ActivityExpenseButton';
@@ -70,7 +70,27 @@ function StatusDropdown({ status, onChange, language }) {
   );
 }
 
-export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, onStatusSaved, onExpenseSaved }) {
+function TransitLink({ from, to, destination }) {
+  if (!from || !to) return null;
+  const origin = from.lat && from.lng ? `${from.lat},${from.lng}` : encodeURIComponent(`${from.name} ${destination}`);
+  const dest = to.lat && to.lng ? `${to.lat},${to.lng}` : encodeURIComponent(`${to.name} ${destination}`);
+  const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&travelmode=transit`;
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={(e) => e.stopPropagation()}
+      className="flex items-center gap-2 mx-4 my-1 px-3 py-2 rounded-xl bg-sky-50 border border-sky-200 text-sky-700 text-xs font-semibold hover:bg-sky-100 transition-all"
+    >
+      <Bus className="w-3.5 h-3.5 shrink-0" />
+      <span className="truncate">{from.name} → {to.name}</span>
+      <ExternalLink className="w-3 h-3 ml-auto shrink-0" />
+    </a>
+  );
+}
+
+export default function ItineraryTab({ trip, showTransit = false, onGuideSaved, onItineraryUpdated, onStatusSaved, onExpenseSaved }) {
   const { language } = useLanguage();
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [localGuides, setLocalGuides] = useState({});
@@ -171,6 +191,7 @@ export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, o
 
             <div className="space-y-3 ml-4 pl-6 border-l-2 border-indigo-100">
               {(day.activities || []).map((act, i) => {
+                const nextAct = (day.activities || [])[i + 1];
                 const config = typeConfig[act.type] || typeConfig.attrazione;
                 const Icon = config.icon;
                 const hasGuide = isGuidable(act);
@@ -187,8 +208,8 @@ export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, o
                     : 'bg-white border';
 
                 return (
+                  <div key={i}>
                   <div
-                    key={i}
                     ref={(el) => { activityRefs.current[act.name] = el; }}
                     onClick={() => handleBoxClick(act)}
                     className={`rounded-2xl p-4 shadow-sm border transition-all ${cardClass} ${isReplacing ? 'opacity-40' : ''} ${hasGuide ? 'cursor-pointer hover:shadow-md' : ''}`}
@@ -273,6 +294,10 @@ export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, o
                         </div>
                       </div>
                     </div>
+                  </div>
+                  {showTransit && nextAct && status !== 'skip' && nextAct && activityStatus[nextAct.name] !== 'skip' && (
+                    <TransitLink from={act} to={nextAct} destination={trip.destination} />
+                  )}
                   </div>
                 );
               })}

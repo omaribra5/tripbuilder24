@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2, Download, MapPin, Hotel, Plane, Wallet } from 'lucide-react';
+import { ArrowLeft, Loader2, Download, MapPin, Hotel, Plane, Wallet, Bus } from 'lucide-react';
 import ItineraryTab from '@/components/trip/ItineraryTab';
 import MapTab from '@/components/trip/MapTab';
 import HotelsTab from '@/components/trip/HotelsTab';
@@ -22,6 +22,7 @@ export default function TripDetail() {
   const queryClient = useQueryClient();
   const { language } = useLanguage();
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showTransit, setShowTransit] = useState(false);
 
   const { data: trip, isLoading } = useQuery({
     queryKey: ['trip', id],
@@ -116,8 +117,29 @@ export default function TripDetail() {
           </TabsList>
 
           <TabsContent value="itinerary">
+            {/* Transit toggle */}
+            <div className="flex items-center justify-between mb-4 px-1">
+              <button
+                onClick={() => setShowTransit((v) => !v)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border transition-all ${
+                  showTransit
+                    ? 'bg-sky-600 text-white border-sky-600 shadow-md'
+                    : 'bg-white text-gray-500 border-gray-200 hover:border-sky-300 hover:text-sky-600'
+                }`}
+              >
+                <Bus className="w-4 h-4" />
+                {t(language, 'transit_toggle')}
+                <span className={`w-8 h-4 rounded-full transition-colors flex items-center px-0.5 ml-1 ${showTransit ? 'bg-white/30' : 'bg-gray-200'}`}>
+                  <span className={`w-3 h-3 rounded-full bg-white shadow transition-transform ${showTransit ? 'translate-x-4' : 'translate-x-0'}`} />
+                </span>
+              </button>
+              {showTransit && (
+                <span className="text-xs text-sky-600 font-medium">{t(language, 'transit_active')}</span>
+              )}
+            </div>
             <ItineraryTab
               trip={trip}
+              showTransit={showTransit}
               onGuideSaved={(activity_guides) => updateMutation.mutate({ activity_guides })}
               onItineraryUpdated={(itinerary) => updateMutation.mutate({ itinerary })}
               onStatusSaved={(activity_status) => updateMutation.mutate({ activity_status })}
