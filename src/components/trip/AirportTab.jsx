@@ -1,18 +1,27 @@
-import { Plane, Bus, Car, Clock, Euro, ChevronRight } from 'lucide-react';
+import { Plane, Bus, Car, Clock, Euro } from 'lucide-react';
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/i18n';
 
 const typeIcons = {
   'Mezzi pubblici': Bus,
   'Taxi': Car,
   'NCC': Car,
+  'Public transport': Bus,
+  'Transports en commun': Bus,
+  'Öffentliche Verkehrsmittel': Bus,
+  'Transporte público': Bus,
+  'Transporte público (pt)': Bus,
 };
 
 export default function AirportTab({ trip }) {
+  const { language } = useLanguage();
+
   if (!trip.arrival_airport) {
     return (
       <div className="text-center py-10">
         <Plane className="w-12 h-12 text-indigo-300 mx-auto mb-3" />
-        <h3 className="font-semibold text-gray-700">Nessun trasferimento aeroporto configurato</h3>
-        <p className="text-muted-foreground text-sm mt-1">Hai indicato di sapere già come raggiungere l'alloggio</p>
+        <h3 className="font-semibold text-gray-700">{t(language, 'airport_no_transfer')}</h3>
+        <p className="text-muted-foreground text-sm mt-1">{t(language, 'airport_knows_route')}</p>
       </div>
     );
   }
@@ -20,10 +29,12 @@ export default function AirportTab({ trip }) {
   if (!trip.airport_transfer?.options?.length) {
     return (
       <div className="text-center py-10 text-muted-foreground">
-        Le istruzioni di trasferimento verranno generate con l'itinerario
+        {t(language, 'airport_pending')}
       </div>
     );
   }
+
+  const locale = language === 'it' ? 'it-IT' : language === 'fr' ? 'fr-FR' : language === 'de' ? 'de-DE' : language === 'es' ? 'es-ES' : language === 'pt' ? 'pt-PT' : language === 'ja' ? 'ja-JP' : language === 'zh' ? 'zh-CN' : language === 'ar' ? 'ar' : language === 'ru' ? 'ru-RU' : 'en-US';
 
   return (
     <div className="space-y-4">
@@ -35,7 +46,7 @@ export default function AirportTab({ trip }) {
             <p className="text-sm text-indigo-600">→ {trip.accommodation_name}</p>
           )}
           {trip.arrival_datetime && (
-            <p className="text-sm text-indigo-500">Arrivo: {new Date(trip.arrival_datetime).toLocaleString('it-IT')}</p>
+            <p className="text-sm text-indigo-500">{t(language, 'airport_arrival')}: {new Date(trip.arrival_datetime).toLocaleString(locale)}</p>
           )}
         </div>
       </div>

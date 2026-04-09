@@ -1,12 +1,16 @@
-import { Hotel, MapPin, ExternalLink, Star } from 'lucide-react';
+import { Hotel, MapPin, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/i18n';
 
 export default function HotelsTab({ trip }) {
+  const { language } = useLanguage();
+
   if (trip.has_accommodation) {
     return (
       <div className="text-center py-10">
         <Hotel className="w-12 h-12 text-indigo-300 mx-auto mb-3" />
-        <h3 className="font-semibold text-gray-700">Hai già un alloggio prenotato</h3>
+        <h3 className="font-semibold text-gray-700">{t(language, 'hotels_already_booked')}</h3>
         {trip.accommodation_name && (
           <p className="text-muted-foreground mt-1">{trip.accommodation_name}</p>
         )}
@@ -17,7 +21,7 @@ export default function HotelsTab({ trip }) {
   if (!trip.hotel_suggestions?.length) {
     return (
       <div className="text-center py-10 text-muted-foreground">
-        I suggerimenti hotel verranno generati con l'itinerario
+        {t(language, 'hotels_pending')}
       </div>
     );
   }
@@ -25,7 +29,7 @@ export default function HotelsTab({ trip }) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Hotel selezionati in base alla posizione rispetto al tuo tour e al tuo budget <strong>{trip.budget}</strong>
+        {t(language, 'hotels_selected_for')} <strong>{trip.budget}</strong>
       </p>
       {trip.hotel_suggestions.map((hotel, i) => (
         <div key={i} className="bg-white rounded-2xl p-5 shadow-sm border">
@@ -60,7 +64,7 @@ export default function HotelsTab({ trip }) {
             <a href={hotel.booking_url} target="_blank" rel="noopener noreferrer" className="mt-4 block">
               <Button className="w-full bg-indigo-600 hover:bg-indigo-700 gap-2">
                 <ExternalLink className="w-4 h-4" />
-                Cerca su Booking.com
+                {t(language, 'hotels_search_booking')}
               </Button>
             </a>
           )}

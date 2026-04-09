@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/i18n';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -38,6 +40,7 @@ function FlyToCenter({ center }) {
 }
 
 export default function MapTab({ trip }) {
+  const { language } = useLanguage();
   const days = trip.itinerary || [];
   const [selectedDay, setSelectedDay] = useState(days[0]?.day ?? null);
 
@@ -47,7 +50,7 @@ export default function MapTab({ trip }) {
   if (!days.length) {
     return (
       <div className="text-center py-10 text-muted-foreground">
-        <p>La mappa sarà disponibile dopo la generazione dell'itinerario</p>
+        <p>{t(language, 'map_no_itinerary')}</p>
       </div>
     );
   }
@@ -55,8 +58,8 @@ export default function MapTab({ trip }) {
   if (!activities.length) {
     return (
       <div className="space-y-3">
-        <DaySelector days={days} selectedDay={selectedDay} onChange={setSelectedDay} />
-        <div className="text-center py-10 text-muted-foreground">Nessuna attività con coordinate per questo giorno</div>
+        <DaySelector days={days} selectedDay={selectedDay} onChange={setSelectedDay} language={language} />
+        <div className="text-center py-10 text-muted-foreground">{t(language, 'map_no_coords')}</div>
       </div>
     );
   }
@@ -66,7 +69,7 @@ export default function MapTab({ trip }) {
 
   return (
     <div className="space-y-3">
-      <DaySelector days={days} selectedDay={selectedDay} onChange={setSelectedDay} />
+      <DaySelector days={days} selectedDay={selectedDay} onChange={setSelectedDay} language={language} />
       <div className="rounded-2xl overflow-hidden border shadow-sm">
         <MapContainer center={center} zoom={13} style={{ height: '500px', width: '100%' }}>
           <TileLayer
@@ -92,18 +95,18 @@ export default function MapTab({ trip }) {
           ))}
         </MapContainer>
         <div className="p-3 bg-white flex gap-4 text-sm text-muted-foreground">
-          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-indigo-500 inline-block" /> Attrazioni</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-orange-400 inline-block" /> Ristoranti</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-indigo-500 inline-block" /> {t(language, 'map_legend_attractions')}</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-orange-400 inline-block" /> {t(language, 'map_legend_restaurants')}</span>
         </div>
       </div>
     </div>
   );
 }
 
-function DaySelector({ days, selectedDay, onChange }) {
+function DaySelector({ days, selectedDay, onChange, language }) {
   return (
     <div className="flex items-center gap-3">
-      <label className="text-sm font-semibold text-gray-700 shrink-0">Giorno:</label>
+      <label className="text-sm font-semibold text-gray-700 shrink-0">{t(language, 'map_day_label')}:</label>
       <select
         className="border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white flex-1"
         value={selectedDay ?? ''}
@@ -111,7 +114,7 @@ function DaySelector({ days, selectedDay, onChange }) {
       >
         {days.map((d) => (
           <option key={d.day} value={d.day}>
-            Giorno {d.day}{d.title ? ` — ${d.title}` : ''}{d.date ? ` (${d.date})` : ''}
+            {t(language, 'map_day_label')} {d.day}{d.title ? ` — ${d.title}` : ''}{d.date ? ` (${d.date})` : ''}
           </option>
         ))}
       </select>
