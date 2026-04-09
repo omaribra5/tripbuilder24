@@ -8,6 +8,7 @@ import { ArrowLeft, Loader2, Download, MapPin, Wallet, RefreshCw } from 'lucide-
 import ItineraryTab from '@/components/trip/ItineraryTab';
 import MapTab from '@/components/trip/MapTab';
 import ExpensesTab from '@/components/trip/ExpensesTab';
+import DocumentsTab from '@/components/trip/DocumentsTab';
 import { generateTripWithAI } from '@/lib/tripGenerator';
 import { generateDayGuides, generateActivityGuide, isGuidable } from '@/lib/guideGenerator';
 import { exportTripPDF } from '@/lib/pdfExporter';
@@ -95,7 +96,7 @@ export default function TripDetail() {
       {/* Tabs */}
       <div className="max-w-4xl mx-auto px-4 py-6">
         <Tabs defaultValue="itinerary">
-          <TabsList className="w-full grid grid-cols-3 mb-6">
+          <TabsList className="w-full grid grid-cols-4 mb-6">
             <TabsTrigger value="itinerary" className="gap-1 text-xs">
               <MapPin className="w-3 h-3" /> Tour
             </TabsTrigger>
@@ -104,6 +105,9 @@ export default function TripDetail() {
             </TabsTrigger>
             <TabsTrigger value="expenses" className="gap-1 text-xs">
               <Wallet className="w-3 h-3" /> Budget
+            </TabsTrigger>
+            <TabsTrigger value="documents" className="gap-1 text-xs">
+              📄 Documenti
             </TabsTrigger>
           </TabsList>
 
@@ -124,6 +128,12 @@ export default function TripDetail() {
             <ExpensesTab
               trip={trip}
               onSave={(data) => updateMutation.mutate(data)}
+            />
+          </TabsContent>
+          <TabsContent value="documents">
+            <DocumentsTab
+              trip={trip}
+              onSave={(documents) => updateMutation.mutate({ documents })}
             />
           </TabsContent>
         </Tabs>

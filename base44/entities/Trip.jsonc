@@ -261,6 +261,33 @@
         }
       }
     },
+    "documents": {
+      "type": "array",
+      "description": "User-uploaded travel documents",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "uploaded_at": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "cover_image": {
       "type": "string",
       "description": "Cover image URL"
