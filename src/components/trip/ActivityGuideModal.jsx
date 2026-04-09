@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { X, MapPin, Clock, Euro, Lightbulb, ChevronRight, Loader2, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/i18n';
 
 export default function ActivityGuideModal({ activity, guide, onClose }) {
   const [activeStep, setActiveStep] = useState(null);
+  const { language } = useLanguage();
 
   const isLoading = !guide;
 
@@ -29,7 +32,7 @@ export default function ActivityGuideModal({ activity, guide, onClose }) {
           <div className="absolute bottom-4 left-5 right-5">
             <div className="flex items-center gap-2 mb-1">
               <span className="bg-indigo-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-                🗺️ Guida AI
+                {t(language, 'guide_badge')}
               </span>
             </div>
             <h2 className="text-2xl font-bold text-white leading-tight">{activity.name}</h2>
@@ -40,7 +43,7 @@ export default function ActivityGuideModal({ activity, guide, onClose }) {
         {isLoading ? (
           <div className="flex-1 flex items-center justify-center py-20 flex-col gap-4">
             <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
-            <p className="text-muted-foreground font-medium">Sto preparando la tua guida...</p>
+            <p className="text-muted-foreground font-medium">{t(language, 'guide_loading')}</p>
           </div>
         ) : (
           <div className="p-5 space-y-6">
@@ -58,21 +61,21 @@ export default function ActivityGuideModal({ activity, guide, onClose }) {
                 {guide.practical_info.duration && (
                   <div className="text-center">
                     <Clock className="w-5 h-5 text-indigo-600 mx-auto mb-1" />
-                    <p className="text-xs text-muted-foreground">Durata</p>
+                    <p className="text-xs text-muted-foreground">{t(language, 'guide_duration')}</p>
                     <p className="text-sm font-semibold text-gray-800">{guide.practical_info.duration}</p>
                   </div>
                 )}
                 {guide.practical_info.price && (
                   <div className="text-center">
                     <Euro className="w-5 h-5 text-indigo-600 mx-auto mb-1" />
-                    <p className="text-xs text-muted-foreground">Prezzo</p>
+                    <p className="text-xs text-muted-foreground">{t(language, 'guide_price')}</p>
                     <p className="text-sm font-semibold text-gray-800">{guide.practical_info.price}</p>
                   </div>
                 )}
                 {guide.practical_info.best_time && (
                   <div className="text-center">
                     <Star className="w-5 h-5 text-indigo-600 mx-auto mb-1" />
-                    <p className="text-xs text-muted-foreground">Orario migliore</p>
+                    <p className="text-xs text-muted-foreground">{t(language, 'guide_best_time')}</p>
                     <p className="text-sm font-semibold text-gray-800">{guide.practical_info.best_time}</p>
                   </div>
                 )}
@@ -83,7 +86,7 @@ export default function ActivityGuideModal({ activity, guide, onClose }) {
             {guide.visit_steps?.length > 0 && (
               <div>
                 <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-indigo-600" /> Percorso di visita
+                  <MapPin className="w-4 h-4 text-indigo-600" /> {t(language, 'guide_visit_steps')}
                 </h3>
                 <div className="space-y-2">
                   {guide.visit_steps.map((step, i) => (
@@ -130,7 +133,7 @@ export default function ActivityGuideModal({ activity, guide, onClose }) {
             {guide.practical_info?.tips?.length > 0 && (
               <div>
                 <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                  <Lightbulb className="w-4 h-4 text-amber-500" /> Consigli pratici
+                  <Lightbulb className="w-4 h-4 text-amber-500" /> {t(language, 'guide_tips')}
                 </h3>
                 <ul className="space-y-2">
                   {guide.practical_info.tips.map((tip, i) => (
@@ -148,14 +151,14 @@ export default function ActivityGuideModal({ activity, guide, onClose }) {
               <div className="bg-gradient-to-r from-indigo-600 to-sky-600 rounded-2xl p-4 text-white">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-xl">🤫</span>
-                  <span className="font-bold">Segreto da insider</span>
+                  <span className="font-bold">{t(language, 'guide_insider')}</span>
                 </div>
                 <p className="text-sm text-indigo-100 leading-relaxed">{guide.insider_secret}</p>
               </div>
             )}
 
             <Button onClick={onClose} className="w-full rounded-2xl" variant="outline">
-              Chiudi guida
+              {t(language, 'guide_close')}
             </Button>
           </div>
         )}
