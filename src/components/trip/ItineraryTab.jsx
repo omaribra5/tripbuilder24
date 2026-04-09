@@ -4,6 +4,8 @@ import { Clock, MapPin, Utensils, ShoppingBag, TreePine, Building2, ExternalLink
 import { isGuidable, generateActivityGuide, generateAlternativeActivity } from '@/lib/guideGenerator';
 import ActivityGuideModal from '@/components/trip/ActivityGuideModal';
 import ActivityExpenseButton from '@/components/trip/ActivityExpenseButton';
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/i18n';
 
 const typeConfig = {
   ristorante: { icon: Utensils, color: 'bg-orange-100 text-orange-700', badge: 'Ristorante' },
@@ -15,7 +17,7 @@ const typeConfig = {
 };
 
 // Status dropdown component
-function StatusDropdown({ status, onChange }) {
+function StatusDropdown({ status, onChange, language }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -26,9 +28,9 @@ function StatusDropdown({ status, onChange }) {
   }, []);
 
   const options = [
-    { value: null, label: 'Da fare', icon: Clock, className: 'text-gray-500' },
-    { value: 'done', label: 'Visitata ✓', icon: CheckCircle2, className: 'text-green-600' },
-    { value: 'skip', label: 'Skip', icon: MinusCircle, className: 'text-gray-400' },
+    { value: null, label: t(language, 'status_todo'), icon: Clock, className: 'text-gray-500' },
+    { value: 'done', label: t(language, 'status_done'), icon: CheckCircle2, className: 'text-green-600' },
+    { value: 'skip', label: t(language, 'status_skip'), icon: MinusCircle, className: 'text-gray-400' },
   ];
   const current = options.find((o) => o.value === status) || options[0];
   const Icon = current.icon;
@@ -69,6 +71,7 @@ function StatusDropdown({ status, onChange }) {
 }
 
 export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, onStatusSaved, onExpenseSaved }) {
+  const { language } = useLanguage();
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [localGuides, setLocalGuides] = useState({});
   const [generatingFor, setGeneratingFor] = useState(null);
@@ -99,7 +102,7 @@ export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, o
   }, []);
 
   if (!itinerary?.length) {
-    return <div className="text-center py-10 text-muted-foreground">Itinerario non ancora generato</div>;
+    return <div className="text-center py-10 text-muted-foreground">{t(language, 'itinerary_empty')}</div>;
   }
 
   const guides = { ...(trip.activity_guides || {}), ...localGuides };
@@ -110,7 +113,7 @@ export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, o
     setSelectedActivity(act);
     if (!guides[act.name]) {
       setGeneratingFor(act.name);
-      const generated = await generateActivityGuide(act, trip.destination);
+      const generated = await generateActivityGuide(act, trip.destination, language);
       setLocalGuides((prev) => ({ ...prev, [act.name]: generated }));
       setGeneratingFor(null);
       onGuideSaved?.({ ...guides, [act.name]: generated });
@@ -119,7 +122,7 @@ export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, o
 
   const handleReplaceActivity = async (act, day) => {
     setReplacingFor(act.name);
-    const alternative = await generateAlternativeActivity(act, day, trip);
+    const alternative = await generateAlternativeActivity(act, day, trip, language);
     const newItinerary = itinerary.map((d) => {
       if (d.day !== day.day) return d;
       return { ...d, activities: d.activities.map((a) => a.name === act.name ? { ...alternative } : a) };
@@ -202,9 +205,9 @@ export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, o
                           <span className={`font-semibold ${status === 'skip' ? 'text-gray-400 line-through' : status === 'done' ? 'text-gray-600' : 'text-gray-900'}`}>{act.name}</span>
                           <Badge variant="secondary" className={status === 'skip' ? 'bg-gray-100 text-gray-400' : config.color}>{config.badge}</Badge>
                           {hasGuide && !isLoading && status !== 'skip' && (
-                            <span className="text-xs text-indigo-400 italic">Tocca per la guida AI</span>
+                            <span className="text-xs text-indigo-400 italic">{t(language, 'ai_guide_hint')}</span>
                           )}
-                          {isLoading && <span className="text-xs text-indigo-400 italic animate-pulse">Caricando guida...</span>}
+                          {isLoading && <span className="text-xs text-indigo-400 italic animate-pulse">{t(language, 'ai_guide_loading')}</span>}
                         </div>
                         {act.description && status !== 'skip' && (
                           <p className="text-sm text-muted-foreground mt-1">{act.description}</p>
@@ -223,6 +226,7 @@ export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, o
                           <StatusDropdown
                             status={status}
                             onChange={(val) => handleStatusChange(act.name, val)}
+                            language={language}
                           />
                           <ActivityExpenseButton
                             actName={act.name}
@@ -252,7 +256,7 @@ export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, o
                                 className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-all"
                               >
                                 <ExternalLink className="w-3 h-3" />
-                                Prenota / Recensioni
+                                {t(language, 'book_reviews')}
                               </a>
                               {act.type !== 'trasporto' && (
                                 <button
@@ -261,7 +265,7 @@ export default function ItineraryTab({ trip, onGuideSaved, onItineraryUpdated, o
                                   className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition-all disabled:opacity-50"
                                 >
                                   <RefreshCw className={`w-3 h-3 ${isReplacing ? 'animate-spin' : ''}`} />
-                                  {isReplacing ? 'Cercando...' : 'Cambia'}
+                                  {isReplacing ? t(language, 'searching') : t(language, 'change_activity')}
                                 </button>
                               )}
                             </>

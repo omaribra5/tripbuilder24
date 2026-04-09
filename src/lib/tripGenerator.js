@@ -1,50 +1,59 @@
 import { base44 } from '@/api/base44Client';
 
-export async function generateTripWithAI(trip) {
+const LANGUAGE_NAMES = {
+  it: 'Italian', en: 'English', fr: 'French', de: 'German',
+  es: 'Spanish', pt: 'Portuguese', ja: 'Japanese', zh: 'Chinese',
+  ar: 'Arabic', ru: 'Russian',
+};
+
+export async function generateTripWithAI(trip, language = 'it') {
   const days = Math.max(1, Math.round(
     (new Date(trip.end_date) - new Date(trip.start_date)) / (1000 * 60 * 60 * 24)
   ));
 
+  const langName = LANGUAGE_NAMES[language] || 'Italian';
+
   const prompt = `
-Sei un esperto pianificatore di viaggi. Crea un itinerario dettagliato per il seguente viaggio:
+You are an expert travel planner. Create a detailed itinerary for the following trip.
+IMPORTANT: Write ALL text content (titles, descriptions, tips, names of activities, restaurant names, etc.) in ${langName}. Only proper nouns (e.g. famous landmark names) can remain in their original language.
 
-DESTINAZIONE: ${trip.destination}, ${trip.country || ''}
-DATE: dal ${trip.start_date} al ${trip.end_date} (${days} giorni)
-VIAGGIATORI: ${trip.travelers}
+DESTINATION: ${trip.destination}, ${trip.country || ''}
+DATES: from ${trip.start_date} to ${trip.end_date} (${days} days)
+TRAVELERS: ${trip.travelers}
 BUDGET: ${trip.budget}
-INTERESSI: ${(trip.interests || []).join(', ')}
-NOTE: ${trip.notes || 'nessuna'}
+INTERESTS: ${(trip.interests || []).join(', ')}
+NOTES: ${trip.notes || 'none'}
 
-PREFERENZE ALIMENTARI:
-- Intolleranze: ${(trip.food_intolerances || []).join(', ') || 'nessuna'}
-- Cibi preferiti: ${trip.favorite_foods || 'nessuno specificato'}
-- Cibi da evitare: ${trip.disliked_foods || 'nessuno specificato'}
-- Orario pranzo preferito: ${trip.meal_time_preference || '13:00'}
+FOOD PREFERENCES:
+- Intolerances: ${(trip.food_intolerances || []).join(', ') || 'none'}
+- Favorite foods: ${trip.favorite_foods || 'not specified'}
+- Foods to avoid: ${trip.disliked_foods || 'not specified'}
+- Preferred lunch time: ${trip.meal_time_preference || '13:00'}
 
-ISTRUZIONI IMPORTANTI:
-1. Per ogni giorno inserisci tutte le attrazioni principali con orari realistici e durata in minuti.
-2. Inserisci un ristorante nel momento più vicino all'orario di pranzo preferito (${trip.meal_time_preference || '13:00'}), tenendo conto degli orari delle attrazioni precedenti.
-3. Il ristorante deve essere vicino all'attrazione precedente o successiva, e deve rispettare intolleranze e preferenze.
-4. Per ogni attività includi coordinate GPS (lat/lng) realistiche.
-5. Il tipo (type) può essere: "attrazione", "ristorante", "museo", "parco", "shopping", "trasporto".
-6. Per i ristoranti includi nel campo "tip" info su cucina, prezzo medio e perché è adatto all'utente.
-7. MOLTO IMPORTANTE - BOOKING URL: Per OGNI attività (musei, gite, escursioni, attrazioni, esperienze, spa, snorkeling, safari, crociere, ecc.) DEVI cercare su internet il miglior operatore specifico che organizza quell'attività nella destinazione, compatibile con il budget "${trip.budget}". Inserisci nel campo "booking_url" un link diretto a GetYourGuide, Viator, Airbnb Experiences o al sito ufficiale dell'operatore/attrazione. MAI lasciare booking_url vuoto per un'attrazione o esperienza prenotabile. Esempi: "https://www.getyourguide.com/s/?q=NOME+ATTIVITA+${encodeURIComponent(trip.destination)}" oppure link diretto se trovi l'operatore specifico.
-8. Per i ristoranti inserisci in booking_url il link a TripAdvisor o Google Maps del ristorante specifico (es. "https://www.tripadvisor.com/Search?q=NOME+RISTORANTE+${encodeURIComponent(trip.destination)}").
-9. Il nome dell'attività deve essere SPECIFICO: non "Gita in barca" ma "Gita in barca a vela con snorkeling con [Nome Operatore]", non "Massaggio rilassante" ma "Trattamento Hammam al [Nome Spa/Hotel specifico]". Usa internet per trovare operatori reali e verificati nella destinazione.
+IMPORTANT INSTRUCTIONS:
+1. For each day include all major attractions with realistic times and duration in minutes.
+2. Include a restaurant at the time closest to the preferred lunch time (${trip.meal_time_preference || '13:00'}), considering the previous attraction schedules.
+3. The restaurant must be near the previous or next attraction and respect intolerances and preferences.
+4. For each activity include realistic GPS coordinates (lat/lng).
+5. The type field can be: "attrazione", "ristorante", "museo", "parco", "shopping", "trasporto".
+6. For restaurants include in the "tip" field info about cuisine, average price and why it's suitable.
+7. VERY IMPORTANT - BOOKING URL: For EVERY bookable activity search the best specific operator online. Use GetYourGuide, Viator, Airbnb Experiences or the official site. Never leave booking_url empty for a bookable experience.
+8. For restaurants use a TripAdvisor or Google Maps link in booking_url.
+9. Activity names must be SPECIFIC: not "Boat trip" but "Sailing trip with snorkeling with [Operator Name]".
 
 ${!trip.has_accommodation ? `
-HOTEL: suggerisci 3 hotel adatti al budget "${trip.budget}" e ben posizionati rispetto all'itinerario. Includi perché sono consigliati e un link booking_url stile "https://www.booking.com/search.html?ss=NOME+HOTEL+${encodeURIComponent(trip.destination)}"
+HOTELS: suggest 3 hotels suitable for "${trip.budget}" budget, well located. Include why recommended and a booking_url like "https://www.booking.com/search.html?ss=HOTEL+NAME+${encodeURIComponent(trip.destination)}"
 ` : ''}
 
 ${trip.arrival_airport ? `
-TRASFERIMENTO AEROPORTO: 
-- Aeroporto: ${trip.arrival_airport}
-- Alloggio: ${trip.accommodation_name || trip.destination}
-- Preferenza: ${trip.airport_transfer_preference}
-- Includi opzioni dettagliate con passi, durata e costo stimato.
+AIRPORT TRANSFER: 
+- Airport: ${trip.arrival_airport}
+- Accommodation: ${trip.accommodation_name || trip.destination}
+- Preference: ${trip.airport_transfer_preference}
+- Include detailed options with steps, duration and estimated cost.
 ` : ''}
 
-Rispondi SOLO con il JSON richiesto, senza testo aggiuntivo.
+Respond ONLY with the required JSON, no additional text.
 `;
 
   const schema = {

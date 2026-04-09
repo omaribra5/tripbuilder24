@@ -42,13 +42,13 @@ export default function TripDetail() {
 
   const handleGenerate = async (tripData) => {
     setIsGenerating(true);
-    const result = await generateTripWithAI(tripData || trip);
+    const result = await generateTripWithAI(tripData || trip, language);
     await updateMutation.mutateAsync(result);
     setIsGenerating(false);
 
     // Generate only day 1 guides in background
     const fullTrip = { ...(tripData || trip), ...result };
-    generateDayGuides(fullTrip, 1).then((activity_guides) => {
+    generateDayGuides(fullTrip, 1, language).then((activity_guides) => {
       updateMutation.mutate({ activity_guides });
     });
   };
@@ -58,8 +58,8 @@ export default function TripDetail() {
       <div className="min-h-screen bg-gradient-to-br from-sky-900 via-blue-800 to-indigo-900 flex items-center justify-center text-white">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-yellow-300 mx-auto mb-4" />
-          <p className="text-xl font-semibold">{isGenerating ? (language === 'it' ? "L'AI sta pianificando il tuo viaggio..." : t(language, 'home_cta_new') + '...') : t(language, 'back') + '...'}</p>
-          {isGenerating && <p className="text-blue-200 mt-2">{language === 'it' ? 'Potrebbe richiedere qualche secondo' : '...'}</p>}
+          <p className="text-xl font-semibold">{isGenerating ? t(language, 'generating_trip') : t(language, 'back') + '...'}</p>
+          {isGenerating && <p className="text-blue-200 mt-2">{t(language, 'generating_wait')}</p>}
         </div>
       </div>
     );

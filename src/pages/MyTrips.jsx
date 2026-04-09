@@ -95,7 +95,7 @@ export default function MyTrips() {
                     trip.status === 'confirmed' ? 'bg-blue-100 text-blue-700' :
                     'bg-yellow-100 text-yellow-700'
                   }`}>
-                    {trip.status === 'completed' ? 'Completato' : trip.status === 'confirmed' ? 'Confermato' : 'In pianificazione'}
+                    {trip.status === 'completed' ? t(language, 'completed') : trip.status === 'confirmed' ? t(language, 'confirmed') : t(language, 'planning')}
                   </div>
                 </div>
               </div>

@@ -6,24 +6,32 @@ export function isGuidable(activity) {
   return GUIDABLE_TYPES.includes(activity.type);
 }
 
-export async function generateActivityGuide(activity, tripDestination) {
+const LANGUAGE_NAMES = {
+  it: 'Italian', en: 'English', fr: 'French', de: 'German',
+  es: 'Spanish', pt: 'Portuguese', ja: 'Japanese', zh: 'Chinese',
+  ar: 'Arabic', ru: 'Russian',
+};
+
+export async function generateActivityGuide(activity, tripDestination, language = 'it') {
+  const langName = LANGUAGE_NAMES[language] || 'Italian';
   const prompt = `
-Sei una guida turistica esperta e appassionata. Crea una guida dettagliata e coinvolgente per visitare "${activity.name}" a ${tripDestination}.
+You are an expert and passionate tour guide. Create a detailed and engaging guide to visit "${activity.name}" in ${tripDestination}.
+IMPORTANT: Write ALL content in ${langName}.
 
-La guida deve:
-1. Iniziare con una breve introduzione storica/culturale emozionante (3-4 frasi)
-2. Descrivere il percorso di visita passo per passo, come se stessi camminando con il turista. Sii specifico: dove andare, cosa guardare, cosa non perdere.
-3. Includere 4-6 punti di interesse interni/esterni con descrizioni dettagliate e curiosità uniche
-4. Aggiungere consigli pratici (orari migliori, cosa portare, come evitare le code, ecc.)
-5. Concludere con un consiglio speciale o un segreto da insider
+The guide must:
+1. Start with a brief exciting historical/cultural introduction (3-4 sentences)
+2. Describe the visit route step by step, as if walking with the tourist. Be specific: where to go, what to look at, what not to miss.
+3. Include 4-6 points of interest with detailed descriptions and unique curiosities
+4. Add practical tips (best times, what to bring, how to avoid queues, etc.)
+5. End with a special insider tip or secret
 
-IMPORTANTE per le foto: per ogni punto del percorso (visit_steps), includi un campo "photo_url" con un URL reale e accessibile pubblicamente di una foto che mostra quel preciso elemento o luogo. Usa URL di Wikimedia Commons (https://upload.wikimedia.org/...) o altri siti con immagini libere. Le foto devono essere pertinenti e specifiche (es. per la "Colonna del Parco Güell" usa la foto di quelle colonne specifiche, non del parco in generale). Includi anche una photo_url principale per l'intera attrazione.
+IMPORTANT for photos: for each visit step, include a "photo_url" field with a real, publicly accessible photo URL from Wikimedia Commons (https://upload.wikimedia.org/...) or similar. Photos must be specific to that element. Also include a main photo_url for the whole attraction.
 
-Scrivi in modo vivace, personale e coinvolgente, come una vera guida turistica.
-Usa emoji sparingly per rendere il testo più leggibile.
-Lunghezza: dettagliata ma non eccessiva (circa 600-800 parole totali).
+Write in a lively, personal and engaging style like a real tour guide.
+Use emoji sparingly for readability.
+Length: detailed but not excessive (about 600-800 words total).
 
-Rispondi SOLO con il JSON richiesto.
+Respond ONLY with the required JSON.
 `;
 
   const schema = {
@@ -67,25 +75,27 @@ Rispondi SOLO con il JSON richiesto.
   return result;
 }
 
-export async function generateAlternativeActivity(activity, day, trip) {
+export async function generateAlternativeActivity(activity, day, trip, language = 'it') {
+  const langName = LANGUAGE_NAMES[language] || 'Italian';
   const otherActivities = (day.activities || [])
     .filter((a) => a.name !== activity.name)
     .map((a) => `- ${a.time} ${a.name} (${a.type})`)
     .join('\n');
 
   const prompt = `
-Sei un esperto di viaggi. L'utente sta visitando ${trip.destination} e vuole sostituire questa attività:
-- Orario: ${activity.time}
-- Nome: ${activity.name}
-- Tipo: ${activity.type}
-- Descrizione: ${activity.description || ''}
+You are a travel expert. The user is visiting ${trip.destination} and wants to replace this activity:
+- Time: ${activity.time}
+- Name: ${activity.name}
+- Type: ${activity.type}
+- Description: ${activity.description || ''}
 
-Le altre attività di quel giorno sono (non devi ripetere queste né suggerire posti lontani da esse):
+Other activities that day (do not repeat these or suggest places far from them):
 ${otherActivities}
 
-Suggerisci UN'ALTERNATIVA dello stesso tipo (${activity.type}) per lo stesso orario (${activity.time}), nello stesso quartiere o zona, che si integri bene con il resto del percorso giornaliero. Non suggerire posti che stiano dall'altra parte della città.
+Suggest ONE ALTERNATIVE of the same type (${activity.type}) for the same time (${activity.time}), in the same neighborhood, that fits well with the rest of the day route.
+IMPORTANT: Write all text content in ${langName}.
 
-Rispondi SOLO con il JSON richiesto.
+Respond ONLY with the required JSON.
 `;
 
   const schema = {
@@ -112,14 +122,14 @@ Rispondi SOLO con il JSON richiesto.
   return result;
 }
 
-export async function generateDayGuides(trip, dayNumber) {
+export async function generateDayGuides(trip, dayNumber, language = 'it') {
   const guides = {};
   const day = (trip.itinerary || []).find((d) => d.day === dayNumber);
   if (!day) return guides;
 
   for (const activity of (day.activities || [])) {
     if (isGuidable(activity)) {
-      const guide = await generateActivityGuide(activity, trip.destination);
+      const guide = await generateActivityGuide(activity, trip.destination, language);
       guides[activity.name] = guide;
     }
   }
