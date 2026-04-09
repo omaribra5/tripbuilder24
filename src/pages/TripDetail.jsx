@@ -81,14 +81,23 @@ export default function TripDetail() {
             <h1 className="text-3xl font-bold text-white">{trip.destination}</h1>
             {trip.country && <p className="text-white/80">{trip.country}</p>}
           </div>
-          <Button
-            onClick={() => exportTripPDF(trip)}
-            variant="outline"
-            className="bg-white/10 border-white/30 text-white hover:bg-white/20 gap-2"
-          >
-            <Download className="w-4 h-4" />
-            PDF
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => handleGenerate(trip)}
+              variant="outline"
+              className="bg-white/10 border-white/30 text-white hover:bg-white/20 gap-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </Button>
+            <Button
+              onClick={() => exportTripPDF(trip)}
+              variant="outline"
+              className="bg-white/10 border-white/30 text-white hover:bg-white/20 gap-2"
+            >
+              <Download className="w-4 h-4" />
+              PDF
+            </Button>
+          </div>
         </div>
       </div>
 
