@@ -2,10 +2,12 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { MapPin } from 'lucide-react';
 import Autocomplete from '@/components/ui/Autocomplete';
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/i18n';
 
 async function fetchCities(query) {
   const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=6&featuretype=city`;
-  const res = await fetch(url, { headers: { 'Accept-Language': 'it' } });
+  const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
   const data = await res.json();
   return data.filter((item) => ['city', 'town', 'village', 'municipality'].includes(item.type) || item.addresstype === 'city');
 }
@@ -23,6 +25,7 @@ function daysDiff(start, end) {
 }
 
 export default function StepBasicInfo({ data, update, onNext }) {
+  const { language } = useLanguage();
   const tooLong = data.start_date && data.end_date && daysDiff(data.start_date, data.end_date) > MAX_DAYS;
   const canNext = data.destination && data.start_date && data.end_date && !tooLong;
 
@@ -41,16 +44,24 @@ export default function StepBasicInfo({ data, update, onNext }) {
     }
   };
 
+  const travelers = [
+    { value: 'solo', labelKey: 'traveler_solo' },
+    { value: 'coppia', labelKey: 'traveler_couple' },
+    { value: 'famiglia', labelKey: 'traveler_family' },
+    { value: 'amici', labelKey: 'traveler_friends' },
+    { value: 'gruppo', labelKey: 'traveler_group' },
+  ];
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-1">Dove vuoi andare?</h2>
-        <p className="text-muted-foreground">Inserisci la tua destinazione e le date</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-1">{t(language, 'step1_title')}</h2>
+        <p className="text-muted-foreground">{t(language, 'step1_subtitle')}</p>
       </div>
 
       <div className="space-y-4">
         <div>
-          <Label>Città / Destinazione *</Label>
+          <Label>{t(language, 'step1_city_label')}</Label>
           <div className="relative mt-1">
             <MapPin className="absolute left-3 top-3 w-4 h-4 text-muted-foreground z-10 pointer-events-none" />
             <Autocomplete
@@ -61,7 +72,7 @@ export default function StepBasicInfo({ data, update, onNext }) {
                 const country = item.address?.country || '';
                 update({ destination: city, country });
               }}
-              placeholder="es. Barcellona, Parigi, Tokyo..."
+              placeholder={t(language, 'step1_city_placeholder')}
               fetchSuggestions={fetchCities}
               renderItem={(item) => ({
                 label: item.address?.city || item.address?.town || item.address?.village || item.name,
@@ -74,7 +85,7 @@ export default function StepBasicInfo({ data, update, onNext }) {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label>Data arrivo *</Label>
+            <Label>{t(language, 'step1_arrival')}</Label>
             <input
               type="date"
               className="mt-1 w-full border border-input rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
@@ -83,7 +94,7 @@ export default function StepBasicInfo({ data, update, onNext }) {
             />
           </div>
           <div>
-            <Label>Data partenza *</Label>
+            <Label>{t(language, 'step1_departure')}</Label>
             <input
               type="date"
               className="mt-1 w-full border border-input rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
@@ -94,19 +105,13 @@ export default function StepBasicInfo({ data, update, onNext }) {
         </div>
 
         {tooLong && (
-          <p className="text-sm text-red-500">Il viaggio non può superare i {MAX_DAYS} giorni.</p>
+          <p className="text-sm text-red-500">{t(language, 'step1_too_long').replace('{n}', MAX_DAYS)}</p>
         )}
 
         <div>
-          <Label>Con chi viaggi?</Label>
+          <Label>{t(language, 'step1_travelers')}</Label>
           <div className="grid grid-cols-3 gap-2 mt-2">
-            {[
-              { value: 'solo', label: '🧳 Solo' },
-              { value: 'coppia', label: '💑 Coppia' },
-              { value: 'famiglia', label: '👨‍👩‍👧 Famiglia' },
-              { value: 'amici', label: '👫 Amici' },
-              { value: 'gruppo', label: '👥 Gruppo' },
-            ].map(({ value, label }) => (
+            {travelers.map(({ value, labelKey }) => (
               <button
                 key={value}
                 onClick={() => update({ travelers: value })}
@@ -116,7 +121,7 @@ export default function StepBasicInfo({ data, update, onNext }) {
                     : 'bg-white text-gray-700 border-gray-200 hover:border-indigo-300'
                 }`}
               >
-                {label}
+                {t(language, labelKey)}
               </button>
             ))}
           </div>
@@ -128,7 +133,7 @@ export default function StepBasicInfo({ data, update, onNext }) {
         disabled={!canNext}
         onClick={onNext}
       >
-        Continua
+        {t(language, 'continue')}
       </Button>
     </div>
   );

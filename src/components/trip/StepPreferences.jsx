@@ -1,29 +1,33 @@
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/i18n';
 
 const INTERESTS = [
-  { value: 'arte', label: '🎨 Arte' },
-  { value: 'storia', label: '🏛️ Storia' },
-  { value: 'natura', label: '🌿 Natura' },
-  { value: 'cibo', label: '🍝 Gastronomia' },
-  { value: 'shopping', label: '🛍️ Shopping' },
-  { value: 'nightlife', label: '🎉 Vita notturna' },
-  { value: 'sport', label: '⛷️ Sport' },
-  { value: 'relax', label: '🧘 Relax' },
-  { value: 'avventura', label: '🧗 Avventura' },
-  { value: 'fotografia', label: '📷 Fotografia' },
-  { value: 'musica', label: '🎵 Musica' },
-  { value: 'architettura', label: '🏰 Architettura' },
+  { value: 'arte', labelKey: 'interest_art' },
+  { value: 'storia', labelKey: 'interest_history' },
+  { value: 'natura', labelKey: 'interest_nature' },
+  { value: 'cibo', labelKey: 'interest_food' },
+  { value: 'shopping', labelKey: 'interest_shopping' },
+  { value: 'nightlife', labelKey: 'interest_nightlife' },
+  { value: 'sport', labelKey: 'interest_sport' },
+  { value: 'relax', labelKey: 'interest_relax' },
+  { value: 'avventura', labelKey: 'interest_adventure' },
+  { value: 'fotografia', labelKey: 'interest_photography' },
+  { value: 'musica', labelKey: 'interest_music' },
+  { value: 'architettura', labelKey: 'interest_architecture' },
 ];
 
 const BUDGETS = [
-  { value: 'economico', label: '💰 Economico', desc: 'Ostelli, street food, trasporti locali' },
-  { value: 'medio', label: '💳 Medio', desc: 'Hotel 3★, ristoranti locali' },
-  { value: 'lusso', label: '💎 Lusso', desc: 'Hotel 5★, ristoranti gourmet' },
+  { value: 'economico', labelKey: 'budget_low', descKey: 'budget_low_desc' },
+  { value: 'medio', labelKey: 'budget_mid', descKey: 'budget_mid_desc' },
+  { value: 'lusso', labelKey: 'budget_high', descKey: 'budget_high_desc' },
 ];
 
 export default function StepPreferences({ data, update, onNext }) {
+  const { language } = useLanguage();
+
   const toggleInterest = (val) => {
     const current = data.interests || [];
     if (current.includes(val)) {
@@ -36,14 +40,14 @@ export default function StepPreferences({ data, update, onNext }) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-1">Cosa ti piace fare?</h2>
-        <p className="text-muted-foreground">Seleziona i tuoi interessi e il budget</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-1">{t(language, 'step2_title')}</h2>
+        <p className="text-muted-foreground">{t(language, 'step2_subtitle')}</p>
       </div>
 
       <div>
-        <Label className="mb-2 block">Interessi (seleziona più opzioni)</Label>
+        <Label className="mb-2 block">{t(language, 'step2_interests')}</Label>
         <div className="grid grid-cols-3 gap-2">
-          {INTERESTS.map(({ value, label }) => (
+          {INTERESTS.map(({ value, labelKey }) => (
             <button
               key={value}
               onClick={() => toggleInterest(value)}
@@ -53,16 +57,16 @@ export default function StepPreferences({ data, update, onNext }) {
                   : 'bg-white text-gray-700 border-gray-200 hover:border-indigo-300'
               }`}
             >
-              {label}
+              {t(language, labelKey)}
             </button>
           ))}
         </div>
       </div>
 
       <div>
-        <Label className="mb-2 block">Budget</Label>
+        <Label className="mb-2 block">{t(language, 'step2_budget')}</Label>
         <div className="space-y-2">
-          {BUDGETS.map(({ value, label, desc }) => (
+          {BUDGETS.map(({ value, labelKey, descKey }) => (
             <button
               key={value}
               onClick={() => update({ budget: value })}
@@ -72,25 +76,25 @@ export default function StepPreferences({ data, update, onNext }) {
                   : 'bg-white text-gray-700 border-gray-200 hover:border-indigo-300'
               }`}
             >
-              <div className="font-semibold">{label}</div>
-              <div className={`text-sm ${data.budget === value ? 'text-indigo-100' : 'text-muted-foreground'}`}>{desc}</div>
+              <div className="font-semibold">{t(language, labelKey)}</div>
+              <div className={`text-sm ${data.budget === value ? 'text-indigo-100' : 'text-muted-foreground'}`}>{t(language, descKey)}</div>
             </button>
           ))}
         </div>
       </div>
 
       <div>
-        <Label>Note aggiuntive</Label>
+        <Label>{t(language, 'step2_notes')}</Label>
         <Textarea
           className="mt-1"
-          placeholder="Es: ho bambini piccoli, mi piace camminare molto, preferisco evitare posti affollati..."
+          placeholder={t(language, 'step2_notes_placeholder')}
           value={data.notes}
           onChange={(e) => update({ notes: e.target.value })}
         />
       </div>
 
       <Button className="w-full bg-indigo-600 hover:bg-indigo-700" onClick={onNext}>
-        Continua
+        {t(language, 'continue')}
       </Button>
     </div>
   );

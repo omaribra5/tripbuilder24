@@ -2,13 +2,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Hotel, HelpCircle } from 'lucide-react';
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/i18n';
 
 export default function StepAccommodation({ data, update, onNext }) {
+  const { language } = useLanguage();
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-1">Il tuo alloggio</h2>
-        <p className="text-muted-foreground">Hai già prenotato un alloggio?</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-1">{t(language, 'step4_title')}</h2>
+        <p className="text-muted-foreground">{t(language, 'step4_subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -21,7 +25,7 @@ export default function StepAccommodation({ data, update, onNext }) {
           }`}
         >
           <Hotel className="w-8 h-8 mx-auto mb-2" />
-          <div className="font-semibold">Sì, ho già prenotato</div>
+          <div className="font-semibold">{t(language, 'step4_yes')}</div>
         </button>
 
         <button
@@ -33,35 +37,31 @@ export default function StepAccommodation({ data, update, onNext }) {
           }`}
         >
           <HelpCircle className="w-8 h-8 mx-auto mb-2" />
-          <div className="font-semibold">No, aiutami a scegliere</div>
+          <div className="font-semibold">{t(language, 'step4_no')}</div>
         </button>
       </div>
 
       {data.has_accommodation === true && (
         <div>
-          <Label>Nome hotel / indirizzo alloggio</Label>
+          <Label>{t(language, 'step4_hotel_label')}</Label>
           <Input
             className="mt-1"
-            placeholder="es. Hotel Arts Barcelona, Via Roma 15..."
+            placeholder={t(language, 'step4_hotel_placeholder')}
             value={data.accommodation_name}
             onChange={(e) => update({ accommodation_name: e.target.value })}
           />
-          <p className="text-sm text-muted-foreground mt-1">
-            Verrà usato per calcolare i trasferimenti dall'aeroporto
-          </p>
+          <p className="text-sm text-muted-foreground mt-1">{t(language, 'step4_hotel_hint')}</p>
         </div>
       )}
 
       {data.has_accommodation === false && (
         <div className="bg-indigo-50 rounded-2xl p-4 border border-indigo-100">
-          <p className="text-indigo-700 text-sm font-medium">
-            💡 L'AI suggerirà i migliori hotel per posizione rispetto al tuo tour e budget selezionato, con link diretto a Booking.com per verificare disponibilità e prenotare.
-          </p>
+          <p className="text-indigo-700 text-sm font-medium">{t(language, 'step4_ai_hint')}</p>
         </div>
       )}
 
       <Button className="w-full bg-indigo-600 hover:bg-indigo-700" onClick={onNext}>
-        Continua
+        {t(language, 'continue')}
       </Button>
     </div>
   );
