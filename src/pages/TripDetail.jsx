@@ -4,11 +4,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2, Download, MapPin, Hotel, Plane, Wallet } from 'lucide-react';
+import { ArrowLeft, Loader2, Download, MapPin, Wallet } from 'lucide-react';
 import ItineraryTab from '@/components/trip/ItineraryTab';
 import MapTab from '@/components/trip/MapTab';
-import HotelsTab from '@/components/trip/HotelsTab';
-import AirportTab from '@/components/trip/AirportTab';
 import ExpensesTab from '@/components/trip/ExpensesTab';
 import { generateTripWithAI } from '@/lib/tripGenerator';
 import { generateDayGuides, generateActivityGuide, isGuidable } from '@/lib/guideGenerator';
@@ -97,18 +95,12 @@ export default function TripDetail() {
       {/* Tabs */}
       <div className="max-w-4xl mx-auto px-4 py-6">
         <Tabs defaultValue="itinerary">
-          <TabsList className="w-full grid grid-cols-5 mb-6">
+          <TabsList className="w-full grid grid-cols-3 mb-6">
             <TabsTrigger value="itinerary" className="gap-1 text-xs">
               <MapPin className="w-3 h-3" /> Tour
             </TabsTrigger>
             <TabsTrigger value="map" className="gap-1 text-xs">
               🗺️ {t(language, 'tab_map')}
-            </TabsTrigger>
-            <TabsTrigger value="hotels" className="gap-1 text-xs">
-              <Hotel className="w-3 h-3" /> {t(language, 'tab_hotels')}
-            </TabsTrigger>
-            <TabsTrigger value="airport" className="gap-1 text-xs">
-              <Plane className="w-3 h-3" /> {t(language, 'tab_airport')}
             </TabsTrigger>
             <TabsTrigger value="expenses" className="gap-1 text-xs">
               <Wallet className="w-3 h-3" /> Budget
@@ -127,12 +119,6 @@ export default function TripDetail() {
           </TabsContent>
           <TabsContent value="map">
             <MapTab trip={trip} />
-          </TabsContent>
-          <TabsContent value="hotels">
-            <HotelsTab trip={trip} />
-          </TabsContent>
-          <TabsContent value="airport">
-            <AirportTab trip={trip} />
           </TabsContent>
           <TabsContent value="expenses">
             <ExpensesTab

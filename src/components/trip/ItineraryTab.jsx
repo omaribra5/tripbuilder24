@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Clock, MapPin, Utensils, ShoppingBag, TreePine, Building2, ExternalLink, RefreshCw, CheckCircle2, MinusCircle, ChevronDown, Bus } from 'lucide-react';
+import { Clock, MapPin, Utensils, ShoppingBag, TreePine, Building2, ExternalLink, RefreshCw, CheckCircle2, MinusCircle, ChevronDown, Bus, Plane } from 'lucide-react';
 import { isGuidable, generateActivityGuide, generateAlternativeActivity } from '@/lib/guideGenerator';
 import ActivityGuideModal from '@/components/trip/ActivityGuideModal';
 import ActivityExpenseButton from '@/components/trip/ActivityExpenseButton';
@@ -13,8 +13,57 @@ const typeConfig = {
   parco: { icon: TreePine, color: 'bg-green-100 text-green-700', badge: 'Parco' },
   shopping: { icon: ShoppingBag, color: 'bg-pink-100 text-pink-700', badge: 'Shopping' },
   attrazione: { icon: MapPin, color: 'bg-blue-100 text-blue-700', badge: 'Attrazione' },
-  trasporto: { icon: Clock, color: 'bg-gray-100 text-gray-700', badge: 'Trasporto' },
+  trasporto: { icon: Bus, color: 'bg-sky-100 text-sky-700', badge: 'Trasporto' },
 };
+
+// Special airport transfer card component
+function AirportTransferCard({ act }) {
+  const isArrival = act.name?.startsWith('🛬');
+  const steps = act.description ? act.description.split(/\n|;|\.|(?=\d+\.)/).filter(s => s.trim().length > 3) : [];
+
+  return (
+    <div className={`rounded-2xl border-2 shadow-sm overflow-hidden ${isArrival ? 'border-sky-200 bg-gradient-to-br from-sky-50 to-indigo-50' : 'border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50'}`}>
+      {/* Header */}
+      <div className={`px-5 py-4 flex items-center gap-3 ${isArrival ? 'bg-sky-500' : 'bg-amber-500'}`}>
+        <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+          {isArrival ? <Plane className="w-5 h-5 text-white rotate-[45deg]" /> : <Plane className="w-5 h-5 text-white -rotate-45" />}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-white font-bold text-sm leading-tight">{act.name}</p>
+          <p className="text-white/75 text-xs mt-0.5">{isArrival ? '🛬 Trasferimento arrivo' : '🛫 Trasferimento partenza'}</p>
+        </div>
+        <div className="text-white/80 text-xs font-semibold bg-white/15 rounded-full px-3 py-1">
+          <Bus className="w-3.5 h-3.5 inline mr-1" />
+          Mezzi pubblici
+        </div>
+      </div>
+
+      {/* Steps */}
+      <div className="px-5 py-4">
+        {steps.length > 0 ? (
+          <div className="space-y-2">
+            {steps.map((step, i) => (
+              <div key={i} className="flex gap-3 items-start">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold mt-0.5 ${isArrival ? 'bg-sky-100 text-sky-700' : 'bg-amber-100 text-amber-700'}`}>
+                  {i + 1}
+                </div>
+                <p className="text-sm text-gray-700 leading-snug">{step.replace(/^\d+[\.\)]\s*/, '').trim()}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-600">{act.description}</p>
+        )}
+        {act.tip && (
+          <div className={`mt-4 rounded-xl px-4 py-3 text-sm font-medium flex items-start gap-2 ${isArrival ? 'bg-sky-100 text-sky-800' : 'bg-amber-100 text-amber-800'}`}>
+            <Clock className="w-4 h-4 shrink-0 mt-0.5" />
+            <span>{act.tip}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 // Status dropdown component
 function StatusDropdown({ status, onChange, language }) {
@@ -192,12 +241,21 @@ export default function ItineraryTab({ trip, showTransit = false, onGuideSaved, 
             <div className="space-y-3 ml-4 pl-6 border-l-2 border-indigo-100">
               {(day.activities || []).map((act, i) => {
                 const nextAct = (day.activities || [])[i + 1];
+                const isAirportTransfer = act.type === 'trasporto' && (act.name?.startsWith('🛬') || act.name?.startsWith('🛫'));
                 const config = typeConfig[act.type] || typeConfig.attrazione;
                 const Icon = config.icon;
                 const hasGuide = isGuidable(act);
                 const isReplacing = replacingFor === act.name;
                 const isLoading = generatingFor === act.name;
                 const status = activityStatus[act.name] ?? null;
+
+                if (isAirportTransfer) {
+                  return (
+                    <div key={i} ref={(el) => { activityRefs.current[act.name] = el; }}>
+                      <AirportTransferCard act={act} />
+                    </div>
+                  );
+                }
 
                 // Card styles based on status
                 const cardClass =

@@ -45,12 +45,31 @@ ${!trip.has_accommodation ? `
 HOTELS: suggest 3 hotels suitable for "${trip.budget}" budget, well located. Include why recommended and a booking_url like "https://www.booking.com/search.html?ss=HOTEL+NAME+${encodeURIComponent(trip.destination)}"
 ` : ''}
 
-${trip.arrival_airport ? `
-AIRPORT TRANSFER: 
-- Airport: ${trip.arrival_airport}
-- Accommodation: ${trip.accommodation_name || trip.destination}
-- Preference: ${trip.airport_transfer_preference}
-- Include detailed options with steps, duration and estimated cost.
+${trip.wants_transfer_info && trip.arrival_airport ? `
+AIRPORT TRANSFER CARDS:
+The user wants to know how to reach their hotel from the airport using public transport (and possibly taxi).
+- Arrival airport: ${trip.arrival_airport}
+- Hotel/Accommodation: ${trip.accommodation_name}
+- Destination city: ${trip.destination}
+
+You MUST include two special activities in the itinerary:
+1. At the VERY START of Day 1 (before any other activity), add an activity with:
+   - name: "🛬 ${trip.arrival_airport} → ${trip.accommodation_name}"
+   - type: "trasporto"
+   - time: "Arrivo"
+   - description: step-by-step public transport instructions from ${trip.arrival_airport} to ${trip.accommodation_name} (lines, stops, transfers, walking)
+   - tip: estimated total duration and cost range
+   - lat/lng: coordinates of the airport
+
+2. At the VERY END of the LAST day (after all other activities), add an activity with:
+   - name: "🛫 ${trip.accommodation_name} → ${trip.arrival_airport}"
+   - type: "trasporto"
+   - time: "Partenza"
+   - description: step-by-step public transport instructions from ${trip.accommodation_name} to ${trip.arrival_airport} (lines, stops, transfers, walking)
+   - tip: recommended departure time and estimated total duration
+   - lat/lng: coordinates of the airport
+
+Be VERY specific: name real metro/bus/train lines, real stop names, real journey times per leg.
 ` : ''}
 
 Respond ONLY with the required JSON, no additional text.

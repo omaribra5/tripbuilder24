@@ -5,7 +5,6 @@ import StepBasicInfo from '@/components/trip/StepBasicInfo';
 import StepPreferences from '@/components/trip/StepPreferences';
 import StepFood from '@/components/trip/StepFood';
 import StepAccommodation from '@/components/trip/StepAccommodation';
-import StepAirport from '@/components/trip/StepAirport';
 import StepGenerating from '@/components/trip/StepGenerating';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -20,7 +19,6 @@ export default function NewTrip() {
     t(language, 'step_preferences'),
     t(language, 'step_food'),
     t(language, 'step_accommodation'),
-    t(language, 'step_airport'),
   ];
   const [step, setStep] = useState(0);
   const [generating, setGenerating] = useState(false);
@@ -38,10 +36,9 @@ export default function NewTrip() {
     disliked_foods: '',
     meal_time_preference: '13:00',
     has_accommodation: null,
+    wants_transfer_info: null,
     accommodation_name: '',
     arrival_airport: '',
-    arrival_datetime: '',
-    airport_transfer_preference: 'entrambi',
   });
 
   const update = (fields) => setTripData((prev) => ({ ...prev, ...fields }));
@@ -96,8 +93,7 @@ export default function NewTrip() {
         {step === 0 && <StepBasicInfo {...stepProps} onNext={handleNext} />}
         {step === 1 && <StepPreferences {...stepProps} onNext={handleNext} />}
         {step === 2 && <StepFood {...stepProps} onNext={handleNext} />}
-        {step === 3 && <StepAccommodation {...stepProps} onNext={handleNext} />}
-        {step === 4 && <StepAirport {...stepProps} onGenerate={handleGenerate} />}
+        {step === 3 && <StepAccommodation {...stepProps} onNext={handleGenerate} />}
       </div>
     </div>
   );
