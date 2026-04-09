@@ -8,12 +8,12 @@ import { useLanguage } from '@/lib/LanguageContext';
 import { t } from '@/lib/i18n';
 
 const typeConfig = {
-  ristorante: { icon: Utensils, color: 'bg-orange-100 text-orange-700', badge: 'Ristorante' },
-  museo: { icon: Building2, color: 'bg-purple-100 text-purple-700', badge: 'Museo' },
-  parco: { icon: TreePine, color: 'bg-green-100 text-green-700', badge: 'Parco' },
-  shopping: { icon: ShoppingBag, color: 'bg-pink-100 text-pink-700', badge: 'Shopping' },
-  attrazione: { icon: MapPin, color: 'bg-blue-100 text-blue-700', badge: 'Attrazione' },
-  trasporto: { icon: Bus, color: 'bg-sky-100 text-sky-700', badge: 'Trasporto' },
+  ristorante: { icon: Utensils, color: 'bg-orange-50 text-orange-600', badge: 'Restaurant' },
+  museo: { icon: Building2, color: 'bg-purple-50 text-purple-600', badge: 'Museum' },
+  parco: { icon: TreePine, color: 'bg-emerald-50 text-emerald-600', badge: 'Park' },
+  shopping: { icon: ShoppingBag, color: 'bg-pink-50 text-pink-600', badge: 'Shopping' },
+  attrazione: { icon: MapPin, color: 'bg-blue-50 text-blue-600', badge: 'Attraction' },
+  trasporto: { icon: Bus, color: 'bg-slate-100 text-slate-600', badge: 'Transit' },
 };
 
 // Special airport transfer card component
@@ -65,7 +65,6 @@ function AirportTransferCard({ act }) {
   );
 }
 
-// Status dropdown component
 function StatusDropdown({ status, onChange, language }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -77,9 +76,9 @@ function StatusDropdown({ status, onChange, language }) {
   }, []);
 
   const options = [
-    { value: null, label: t(language, 'status_todo'), icon: Clock, className: 'text-gray-500' },
-    { value: 'done', label: t(language, 'status_done'), icon: CheckCircle2, className: 'text-green-600' },
-    { value: 'skip', label: t(language, 'status_skip'), icon: MinusCircle, className: 'text-gray-400' },
+    { value: null, label: t(language, 'status_todo'), icon: Clock, className: 'text-slate-500' },
+    { value: 'done', label: t(language, 'status_done'), icon: CheckCircle2, className: 'text-emerald-600' },
+    { value: 'skip', label: t(language, 'status_skip'), icon: MinusCircle, className: 'text-slate-400' },
   ];
   const current = options.find((o) => o.value === status) || options[0];
   const Icon = current.icon;
@@ -88,10 +87,10 @@ function StatusDropdown({ status, onChange, language }) {
     <div ref={ref} className="relative" onClick={(e) => e.stopPropagation()}>
       <button
         onClick={() => setOpen(!open)}
-        className={`flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-full border transition-all ${
-          status === 'done' ? 'bg-green-50 text-green-600 border-green-200' :
-          status === 'skip' ? 'bg-gray-100 text-gray-400 border-gray-200' :
-          'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'
+        className={`flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-md border transition-all duration-150 ${
+          status === 'done' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+          status === 'skip' ? 'bg-slate-50 text-slate-400 border-slate-200' :
+          'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
         }`}
       >
         <Icon className="w-3 h-3" />
@@ -99,14 +98,14 @@ function StatusDropdown({ status, onChange, language }) {
         <ChevronDown className="w-3 h-3 ml-0.5" />
       </button>
       {open && (
-        <div className="absolute top-full mt-1 left-0 z-50 bg-white border rounded-xl shadow-lg py-1 min-w-[130px]">
+        <div className="absolute top-full mt-1 left-0 z-50 bg-white border border-slate-200 rounded-lg shadow-lg py-1 min-w-[130px]">
           {options.map((opt) => {
             const OIcon = opt.icon;
             return (
               <button
                 key={opt.value ?? 'null'}
                 onClick={() => { onChange(opt.value); setOpen(false); }}
-                className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-gray-50 ${opt.className}`}
+                className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-slate-50 ${opt.className}`}
               >
                 <OIcon className="w-3.5 h-3.5" />
                 {opt.label}
@@ -171,7 +170,7 @@ export default function ItineraryTab({ trip, showTransit = false, onGuideSaved, 
   }, []);
 
   if (!itinerary?.length) {
-    return <div className="text-center py-10 text-muted-foreground">{t(language, 'itinerary_empty')}</div>;
+    return <div className="text-center py-10 text-sm text-slate-400">{t(language, 'itinerary_empty')}</div>;
   }
 
   const guides = { ...(trip.activity_guides || {}), ...localGuides };
@@ -229,16 +228,16 @@ export default function ItineraryTab({ trip, showTransit = false, onGuideSaved, 
         {itinerary.map((day) => (
           <div key={day.day}>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-indigo-600 text-white text-sm font-bold flex items-center justify-center">
+              <div className="w-7 h-7 rounded-lg bg-indigo-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
                 {day.day}
               </div>
               <div>
-                <h3 className="font-bold text-gray-900">{day.title}</h3>
-                {day.date && <p className="text-sm text-muted-foreground">{day.date}</p>}
+                <h3 className="font-semibold text-slate-900 text-sm">{day.title}</h3>
+                {day.date && <p className="text-xs text-slate-500 mt-0.5">{day.date}</p>}
               </div>
             </div>
 
-            <div className="space-y-3 ml-4 pl-6 border-l-2 border-indigo-100">
+            <div className="space-y-2 ml-4 pl-6 border-l-2 border-slate-200">
               {(day.activities || []).map((act, i) => {
                 const nextAct = (day.activities || [])[i + 1];
                 const isAirportTransfer = act.type === 'trasporto' && (act.name?.startsWith('🛬') || act.name?.startsWith('🛫'));
@@ -260,31 +259,31 @@ export default function ItineraryTab({ trip, showTransit = false, onGuideSaved, 
                 // Card styles based on status
                 const cardClass =
                   status === 'done'
-                    ? 'bg-green-50 border-green-200 opacity-80'
+                    ? 'bg-emerald-50/50 border-emerald-200'
                     : status === 'skip'
-                    ? 'bg-gray-50 border-gray-200 opacity-50'
-                    : 'bg-white border';
+                    ? 'bg-slate-50 border-slate-200 opacity-50'
+                    : 'bg-white border border-slate-200';
 
                 return (
                   <div key={i}>
                   <div
                     ref={(el) => { activityRefs.current[act.name] = el; }}
                     onClick={() => handleBoxClick(act)}
-                    className={`rounded-2xl p-4 shadow-sm border transition-all ${cardClass} ${isReplacing ? 'opacity-40' : ''} ${hasGuide ? 'cursor-pointer hover:shadow-md' : ''}`}
+                    className={`rounded-xl p-4 border transition-all duration-150 ${cardClass} ${isReplacing ? 'opacity-40' : ''} ${hasGuide ? 'cursor-pointer hover:shadow-sm' : ''}`}
                   >
                     <div className="flex items-start gap-3">
-                      <div className={`p-2 rounded-xl shrink-0 ${status === 'skip' ? 'bg-gray-100 text-gray-400' : config.color}`}>
-                        {status === 'done' ? <CheckCircle2 className="w-4 h-4 text-green-600" /> :
-                         status === 'skip' ? <MinusCircle className="w-4 h-4 text-gray-400" /> :
+                      <div className={`p-2 rounded-lg shrink-0 ${status === 'skip' ? 'bg-slate-100 text-slate-400' : config.color}`}>
+                        {status === 'done' ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> :
+                         status === 'skip' ? <MinusCircle className="w-4 h-4 text-slate-400" /> :
                          <Icon className="w-4 h-4" />}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`text-sm font-semibold ${status === 'skip' ? 'text-gray-400' : 'text-indigo-600'}`}>{act.time}</span>
-                          <span className={`font-semibold ${status === 'skip' ? 'text-gray-400 line-through' : status === 'done' ? 'text-gray-600' : 'text-gray-900'}`}>{act.name}</span>
-                          <Badge variant="secondary" className={status === 'skip' ? 'bg-gray-100 text-gray-400' : config.color}>{config.badge}</Badge>
+                          <span className={`text-xs font-medium ${status === 'skip' ? 'text-slate-400' : 'text-indigo-500'}`}>{act.time}</span>
+                          <span className={`font-semibold text-sm ${status === 'skip' ? 'text-slate-400 line-through' : status === 'done' ? 'text-slate-500' : 'text-slate-900'}`}>{act.name}</span>
+                          <Badge variant="secondary" className={`text-xs font-medium ${status === 'skip' ? 'bg-slate-100 text-slate-400' : config.color}`}>{config.badge}</Badge>
                           {hasGuide && !isLoading && status !== 'skip' && (
-                            <span className="text-xs text-indigo-400 italic">{t(language, 'ai_guide_hint')}</span>
+                            <span className="text-xs text-indigo-400 font-medium">{t(language, 'ai_guide_hint')}</span>
                           )}
                           {isLoading && <span className="text-xs text-indigo-400 italic animate-pulse">{t(language, 'ai_guide_loading')}</span>}
                         </div>
@@ -297,7 +296,7 @@ export default function ItineraryTab({ trip, showTransit = false, onGuideSaved, 
                           </p>
                         )}
                         {act.tip && status !== 'skip' && (
-                          <div className="mt-2 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 text-xs text-amber-700">
+                          <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-700">
                             💡 {act.tip}
                           </div>
                         )}
@@ -323,7 +322,7 @@ export default function ItineraryTab({ trip, showTransit = false, onGuideSaved, 
                                 href={`https://www.google.com/maps/search/${encodeURIComponent(act.name + ' ' + trip.destination)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-all"
+                                className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 transition-colors duration-150"
                               >
                                 <MapPin className="w-3 h-3" />
                                 Google Maps
@@ -332,7 +331,7 @@ export default function ItineraryTab({ trip, showTransit = false, onGuideSaved, 
                                 href={`https://www.google.com/search?q=${encodeURIComponent('prenota ' + act.name + ' ' + trip.destination)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-all"
+                                className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition-colors duration-150"
                               >
                                 <ExternalLink className="w-3 h-3" />
                                 {t(language, 'book_reviews')}
@@ -341,7 +340,7 @@ export default function ItineraryTab({ trip, showTransit = false, onGuideSaved, 
                                 <button
                                   onClick={() => handleReplaceActivity(act, day)}
                                   disabled={isReplacing}
-                                  className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition-all disabled:opacity-50"
+                                  className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-colors duration-150 disabled:opacity-50"
                                 >
                                   <RefreshCw className={`w-3 h-3 ${isReplacing ? 'animate-spin' : ''}`} />
                                   {isReplacing ? t(language, 'searching') : t(language, 'change_activity')}

@@ -11,101 +11,94 @@ export default function ActivityGuideModal({ activity, guide, onClose }) {
   const isLoading = !guide;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4">
-      <div className="bg-white w-full md:max-w-2xl md:rounded-3xl max-h-[95vh] overflow-y-auto flex flex-col">
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-end md:items-center justify-center p-0 md:p-4">
+      <div className="bg-white w-full md:max-w-2xl md:rounded-2xl max-h-[95vh] overflow-y-auto flex flex-col">
         
-        {/* Hero Image */}
-        <div className="relative h-52 bg-gradient-to-br from-indigo-500 to-sky-600 shrink-0">
+        {/* Header Image */}
+        <div className="relative h-48 bg-slate-800 shrink-0">
           <img
             src={`https://source.unsplash.com/featured/800x400/?${encodeURIComponent(activity.name)},travel`}
             alt={activity.name}
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover opacity-80"
             onError={(e) => { e.target.style.display = 'none'; }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/30 hover:bg-black/50 flex items-center justify-center text-white transition-colors"
+            className="absolute top-4 right-4 w-8 h-8 rounded-lg bg-black/30 hover:bg-black/50 flex items-center justify-center text-white transition-colors duration-150"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
           <div className="absolute bottom-4 left-5 right-5">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="bg-indigo-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-                {t(language, 'guide_badge')}
-              </span>
-            </div>
-            <h2 className="text-2xl font-bold text-white leading-tight">{activity.name}</h2>
-            {activity.time && <p className="text-white/80 text-sm mt-0.5">⏰ {activity.time}</p>}
+            <span className="text-xs font-medium text-white/60 bg-white/10 px-2 py-1 rounded-md">
+              {t(language, 'guide_badge')}
+            </span>
+            <h2 className="text-xl font-bold text-white mt-2 leading-tight">{activity.name}</h2>
+            {activity.time && <p className="text-white/60 text-xs mt-1">{activity.time}</p>}
           </div>
         </div>
 
         {isLoading ? (
-          <div className="flex-1 flex items-center justify-center py-20 flex-col gap-4">
-            <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
-            <p className="text-muted-foreground font-medium">{t(language, 'guide_loading')}</p>
+          <div className="flex-1 flex items-center justify-center py-20 flex-col gap-3">
+            <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+            <p className="text-sm text-slate-500">{t(language, 'guide_loading')}</p>
           </div>
         ) : (
-          <div className="p-5 space-y-6">
+          <div className="p-5 space-y-5">
             
-            {/* Introduction */}
             {guide.introduction && (
-              <div>
-                <p className="text-gray-700 leading-relaxed text-sm">{guide.introduction}</p>
-              </div>
+              <p className="text-slate-600 leading-relaxed text-sm">{guide.introduction}</p>
             )}
 
-            {/* Practical Info */}
             {guide.practical_info && (
-              <div className="bg-indigo-50 rounded-2xl p-4 grid grid-cols-3 gap-3">
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-3 gap-3">
                 {guide.practical_info.duration && (
                   <div className="text-center">
-                    <Clock className="w-5 h-5 text-indigo-600 mx-auto mb-1" />
-                    <p className="text-xs text-muted-foreground">{t(language, 'guide_duration')}</p>
-                    <p className="text-sm font-semibold text-gray-800">{guide.practical_info.duration}</p>
+                    <Clock className="w-4 h-4 text-indigo-500 mx-auto mb-1" />
+                    <p className="text-xs text-slate-500">{t(language, 'guide_duration')}</p>
+                    <p className="text-sm font-semibold text-slate-800">{guide.practical_info.duration}</p>
                   </div>
                 )}
                 {guide.practical_info.price && (
                   <div className="text-center">
-                    <Euro className="w-5 h-5 text-indigo-600 mx-auto mb-1" />
-                    <p className="text-xs text-muted-foreground">{t(language, 'guide_price')}</p>
-                    <p className="text-sm font-semibold text-gray-800">{guide.practical_info.price}</p>
+                    <Euro className="w-4 h-4 text-indigo-500 mx-auto mb-1" />
+                    <p className="text-xs text-slate-500">{t(language, 'guide_price')}</p>
+                    <p className="text-sm font-semibold text-slate-800">{guide.practical_info.price}</p>
                   </div>
                 )}
                 {guide.practical_info.best_time && (
                   <div className="text-center">
-                    <Star className="w-5 h-5 text-indigo-600 mx-auto mb-1" />
-                    <p className="text-xs text-muted-foreground">{t(language, 'guide_best_time')}</p>
-                    <p className="text-sm font-semibold text-gray-800">{guide.practical_info.best_time}</p>
+                    <Star className="w-4 h-4 text-indigo-500 mx-auto mb-1" />
+                    <p className="text-xs text-slate-500">{t(language, 'guide_best_time')}</p>
+                    <p className="text-sm font-semibold text-slate-800">{guide.practical_info.best_time}</p>
                   </div>
                 )}
               </div>
             )}
 
-            {/* Visit Steps */}
             {guide.visit_steps?.length > 0 && (
               <div>
-                <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-indigo-600" /> {t(language, 'guide_visit_steps')}
+                <h3 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-indigo-500" /> {t(language, 'guide_visit_steps')}
                 </h3>
                 <div className="space-y-2">
                   {guide.visit_steps.map((step, i) => (
-                    <div key={i} className="border border-gray-100 rounded-2xl overflow-hidden">
+                    <div key={i} className="border border-slate-200 rounded-xl overflow-hidden">
                       <button
-                        className="w-full flex items-center gap-3 p-4 text-left hover:bg-gray-50 transition-colors"
+                        className="w-full flex items-center gap-3 p-3.5 text-left hover:bg-slate-50 transition-colors duration-150"
                         onClick={() => setActiveStep(activeStep === i ? null : i)}
                       >
-                        <div className="w-7 h-7 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                        <div className="w-6 h-6 rounded-lg bg-indigo-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
                           {step.step_number || i + 1}
                         </div>
-                        <span className="font-semibold text-gray-900 flex-1">{step.title}</span>
+                        <span className="font-medium text-sm text-slate-900 flex-1">{step.title}</span>
                         <ChevronRight
-                          className={`w-4 h-4 text-muted-foreground transition-transform ${activeStep === i ? 'rotate-90' : ''}`}
+                          className={`w-4 h-4 text-slate-400 transition-transform duration-150 ${activeStep === i ? 'rotate-90' : ''}`}
                         />
                       </button>
                       {activeStep === i && (
                         <div className="pb-4 space-y-3">
-                          <div className="mx-4 rounded-xl overflow-hidden h-36 bg-indigo-50">
+                          <div className="mx-4 rounded-lg overflow-hidden h-32 bg-slate-100">
                             <img
                               src={`https://source.unsplash.com/featured/600x300/?${encodeURIComponent(step.title + ' ' + activity.name)},travel`}
                               alt={step.title}
@@ -114,10 +107,10 @@ export default function ActivityGuideModal({ activity, guide, onClose }) {
                             />
                           </div>
                           <div className="px-4 ml-6 space-y-2">
-                            <p className="text-sm text-gray-700 leading-relaxed">{step.description}</p>
+                            <p className="text-sm text-slate-600 leading-relaxed">{step.description}</p>
                             {step.tip && (
-                              <div className="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2 text-xs text-amber-700">
-                                💡 {step.tip}
+                              <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-700">
+                                {step.tip}
                               </div>
                             )}
                           </div>
@@ -129,16 +122,15 @@ export default function ActivityGuideModal({ activity, guide, onClose }) {
               </div>
             )}
 
-            {/* Tips */}
             {guide.practical_info?.tips?.length > 0 && (
               <div>
-                <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
                   <Lightbulb className="w-4 h-4 text-amber-500" /> {t(language, 'guide_tips')}
                 </h3>
-                <ul className="space-y-2">
+                <ul className="space-y-1.5">
                   {guide.practical_info.tips.map((tip, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                      <span className="text-indigo-500 font-bold mt-0.5">•</span>
+                    <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
+                      <span className="text-indigo-400 font-bold mt-0.5 shrink-0">—</span>
                       {tip}
                     </li>
                   ))}
@@ -146,20 +138,18 @@ export default function ActivityGuideModal({ activity, guide, onClose }) {
               </div>
             )}
 
-            {/* Insider Secret */}
             {guide.insider_secret && (
-              <div className="bg-gradient-to-r from-indigo-600 to-sky-600 rounded-2xl p-4 text-white">
+              <div className="bg-slate-900 rounded-xl p-4 text-white">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xl">🤫</span>
-                  <span className="font-bold">{t(language, 'guide_insider')}</span>
+                  <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{t(language, 'guide_insider')}</span>
                 </div>
-                <p className="text-sm text-indigo-100 leading-relaxed">{guide.insider_secret}</p>
+                <p className="text-sm text-slate-300 leading-relaxed">{guide.insider_secret}</p>
               </div>
             )}
 
-            <Button onClick={onClose} className="w-full rounded-2xl" variant="outline">
+            <button onClick={onClose} className="w-full border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium py-2.5 rounded-lg transition-colors duration-150">
               {t(language, 'guide_close')}
-            </Button>
+            </button>
           </div>
         )}
       </div>

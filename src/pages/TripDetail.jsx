@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2, Download, MapPin, Wallet, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Loader2, Download, MapPin, Wallet } from 'lucide-react';
 import ItineraryTab from '@/components/trip/ItineraryTab';
 import MapTab from '@/components/trip/MapTab';
 import ExpensesTab from '@/components/trip/ExpensesTab';
 import DocumentsTab from '@/components/trip/DocumentsTab';
 import { generateTripWithAI } from '@/lib/tripGenerator';
-import { generateDayGuides, generateActivityGuide, isGuidable } from '@/lib/guideGenerator';
+import { generateDayGuides } from '@/lib/guideGenerator';
 import { exportTripPDF } from '@/lib/pdfExporter';
 import { useLanguage } from '@/lib/LanguageContext';
 import { t } from '@/lib/i18n';
@@ -45,7 +45,6 @@ export default function TripDetail() {
     await updateMutation.mutateAsync(result);
     setIsGenerating(false);
 
-    // Generate only day 1 guides in background
     const fullTrip = { ...(tripData || trip), ...result };
     generateDayGuides(fullTrip, 1, language).then((activity_guides) => {
       updateMutation.mutate({ activity_guides });
@@ -54,11 +53,11 @@ export default function TripDetail() {
 
   if (isLoading || isGenerating) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-sky-900 via-blue-800 to-indigo-900 flex items-center justify-center text-white">
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-yellow-300 mx-auto mb-4" />
-          <p className="text-xl font-semibold">{isGenerating ? t(language, 'generating_trip') : t(language, 'back') + '...'}</p>
-          {isGenerating && <p className="text-blue-200 mt-2">{t(language, 'generating_wait')}</p>}
+          <Loader2 className="w-8 h-8 animate-spin text-indigo-500 mx-auto mb-4" />
+          <p className="text-sm font-medium text-slate-700">{isGenerating ? t(language, 'generating_trip') : '...'}</p>
+          {isGenerating && <p className="text-xs text-slate-400 mt-1">{t(language, 'generating_wait')}</p>}
         </div>
       </div>
     );
@@ -67,27 +66,27 @@ export default function TripDetail() {
   if (!trip) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F8FAFC]">
       {/* Header */}
       <div
-        className="relative h-48 md:h-64 bg-gradient-to-br from-indigo-500 to-sky-600 flex items-end"
+        className="relative h-56 md:h-72 bg-slate-800 flex items-end"
         style={trip.cover_image ? { backgroundImage: `url(${trip.cover_image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
       >
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-10 w-full px-6 pb-6 flex items-end justify-between">
           <div>
-            <button onClick={() => navigate('/my-trips')} className="text-white/80 hover:text-white flex items-center gap-1 text-sm mb-2">
-              <ArrowLeft className="w-4 h-4" /> {t(language, 'my_trips_title')}
+            <button onClick={() => navigate('/my-trips')} className="flex items-center gap-1.5 text-white/70 hover:text-white text-xs font-medium mb-3 transition-colors duration-150">
+              <ArrowLeft className="w-3.5 h-3.5" /> {t(language, 'my_trips_title')}
             </button>
-            <h1 className="text-3xl font-bold text-white">{trip.destination}</h1>
-            {trip.country && <p className="text-white/80">{trip.country}</p>}
+            <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">{trip.destination}</h1>
+            {trip.country && <p className="text-white/60 text-sm mt-0.5">{trip.country}</p>}
           </div>
           <Button
             onClick={() => exportTripPDF(trip)}
             variant="outline"
-            className="bg-white/10 border-white/30 text-white hover:bg-white/20 gap-2"
+            className="bg-white/10 border-white/20 text-white hover:bg-white/20 gap-2 text-xs"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-3.5 h-3.5" />
             PDF
           </Button>
         </div>
@@ -96,18 +95,18 @@ export default function TripDetail() {
       {/* Tabs */}
       <div className="max-w-4xl mx-auto px-4 py-6">
         <Tabs defaultValue="itinerary">
-          <TabsList className="w-full grid grid-cols-4 mb-6">
-            <TabsTrigger value="itinerary" className="gap-1 text-xs">
-              <MapPin className="w-3 h-3" /> Tour
+          <TabsList className="w-full grid grid-cols-4 mb-6 bg-white border border-slate-200 shadow-sm p-1 rounded-lg h-auto">
+            <TabsTrigger value="itinerary" className="gap-1.5 text-xs py-2 data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all">
+              <MapPin className="w-3.5 h-3.5" /> {t(language, 'tab_itinerary')}
             </TabsTrigger>
-            <TabsTrigger value="map" className="gap-1 text-xs">
-              🗺️ {t(language, 'tab_map')}
+            <TabsTrigger value="map" className="gap-1.5 text-xs py-2 data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all">
+              {t(language, 'tab_map')}
             </TabsTrigger>
-            <TabsTrigger value="expenses" className="gap-1 text-xs">
-              <Wallet className="w-3 h-3" /> Budget
+            <TabsTrigger value="expenses" className="gap-1.5 text-xs py-2 data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all">
+              <Wallet className="w-3.5 h-3.5" /> Budget
             </TabsTrigger>
-            <TabsTrigger value="documents" className="gap-1 text-xs">
-              📄 Documenti
+            <TabsTrigger value="documents" className="gap-1.5 text-xs py-2 data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all">
+              Docs
             </TabsTrigger>
           </TabsList>
 
