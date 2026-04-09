@@ -13,10 +13,10 @@ export default function LanguageSwitcher() {
     <div className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 backdrop-blur text-white rounded-full px-3 py-1.5 text-sm font-medium transition-all"
+        className="flex items-center gap-2 bg-white text-gray-800 border border-gray-200 hover:bg-gray-50 shadow-md rounded-full px-4 py-2 text-sm font-semibold transition-all"
       >
-        <Globe className="w-4 h-4" />
-        <span>{current?.flag}</span>
+        <Globe className="w-4 h-4 text-indigo-600" />
+        <span className="text-base">{current?.flag}</span>
         <span>{current?.label}</span>
       </button>
 
