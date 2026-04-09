@@ -78,6 +78,10 @@
       "type": "string",
       "description": "Name or address of the accommodation"
     },
+    "wants_transfer_info": {
+      "type": "boolean",
+      "description": "User wants public transport directions from airport to hotel"
+    },
     "arrival_airport": {
       "type": "string",
       "description": "Arrival airport code or name"
