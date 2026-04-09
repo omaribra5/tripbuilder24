@@ -1,10 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { Euro, Check, X } from 'lucide-react';
 import { createPortal } from 'react-dom';
+import { useLanguage } from '@/lib/LanguageContext';
+import { t } from '@/lib/i18n';
 
 const CURRENCIES = ['EUR', 'USD', 'GBP', 'JPY', 'CHF'];
 
 export default function ActivityExpenseButton({ actName, expenses = [], currency = 'EUR', onSave }) {
+  const { language } = useLanguage();
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState('');
   const [cur, setCur] = useState(currency);
@@ -17,20 +20,14 @@ export default function ActivityExpenseButton({ actName, expenses = [], currency
   const handleOpen = (e) => {
     e.stopPropagation();
     const rect = btnRef.current.getBoundingClientRect();
-    setPos({
-      top: rect.bottom + window.scrollY + 6,
-      left: rect.left + window.scrollX,
-    });
+    setPos({ top: rect.bottom + window.scrollY + 6, left: rect.left + window.scrollX });
     setOpen(true);
   };
 
-  // Close on outside click
   useEffect(() => {
     if (!open) return;
     const handler = (e) => {
-      if (!e.target.closest('[data-expense-popup]') && !e.target.closest('[data-expense-btn]')) {
-        setOpen(false);
-      }
+      if (!e.target.closest('[data-expense-popup]') && !e.target.closest('[data-expense-btn]')) setOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -57,7 +54,7 @@ export default function ActivityExpenseButton({ actName, expenses = [], currency
         }`}
       >
         <Euro className="w-3 h-3" />
-        {total > 0 ? `${total.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}` : 'Spesa'}
+        {total > 0 ? `${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}` : t(language, 'activity_expense_btn')}
       </button>
 
       {open && createPortal(
@@ -75,7 +72,7 @@ export default function ActivityExpenseButton({ actName, expenses = [], currency
               step="0.01"
               autoFocus
               className="flex-1 border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
-              placeholder="Importo"
+              placeholder={t(language, 'activity_expense_amount')}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAdd(e)}
@@ -90,13 +87,13 @@ export default function ActivityExpenseButton({ actName, expenses = [], currency
           </div>
           <input
             className="w-full border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
-            placeholder="Nota (opzionale)"
+            placeholder={t(language, 'activity_expense_note')}
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />
           {expenses.length > 0 && (
             <div className="text-xs text-muted-foreground">
-              {expenses.length} spesa/e · Totale: {total.toLocaleString('it-IT', { minimumFractionDigits: 2 })} {currency}
+              {expenses.length} {t(language, 'activity_expense_count')} · {t(language, 'activity_expense_total')}: {total.toLocaleString(undefined, { minimumFractionDigits: 2 })} {currency}
             </div>
           )}
           <div className="flex gap-2">
@@ -104,7 +101,7 @@ export default function ActivityExpenseButton({ actName, expenses = [], currency
               onClick={handleAdd}
               className="flex-1 bg-indigo-600 text-white text-xs font-semibold rounded-lg py-1.5 hover:bg-indigo-700 flex items-center justify-center gap-1"
             >
-              <Check className="w-3 h-3" /> Aggiungi
+              <Check className="w-3 h-3" /> {t(language, 'activity_expense_add')}
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); setOpen(false); }}
