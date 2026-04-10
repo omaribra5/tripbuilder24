@@ -1,0 +1,62 @@
+{
+  "name": "TripTemplate",
+  "type": "object",
+  "properties": {
+    "params_hash": {
+      "type": "string",
+      "description": "MD5-like hash of key generation parameters for exact matching"
+    },
+    "destination": {
+      "type": "string",
+      "description": "Destination city/region"
+    },
+    "country": {
+      "type": "string"
+    },
+    "travelers": {
+      "type": "string",
+      "enum": [
+        "solo",
+        "coppia",
+        "famiglia",
+        "amici",
+        "gruppo"
+      ]
+    },
+    "budget": {
+      "type": "string",
+      "enum": [
+        "economico",
+        "medio",
+        "lusso"
+      ]
+    },
+    "duration_days": {
+      "type": "number",
+      "description": "Number of days"
+    },
+    "interests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "itinerary": {
+      "type": "array",
+      "description": "Cached AI-generated itinerary"
+    },
+    "hotel_suggestions": {
+      "type": "array",
+      "description": "Cached hotel suggestions"
+    },
+    "use_count": {
+      "type": "number",
+      "description": "How many times this template has been reused",
+      "default": 1
+    }
+  },
+  "required": [
+    "params_hash",
+    "destination"
+  ]
+}
