@@ -138,16 +138,60 @@ Respond ONLY with the required JSON, no additional text.
 }
 
 function buildDeltaPrompt(trip, days, langName, template) {
+  const templateDays = template.duration_days || days;
+
+  // Compute human-readable diffs
+  const diffs = [];
+
+  if (trip.travelers !== template.travelers) {
+    diffs.push(`travelers: from "${template.travelers}" to "${trip.travelers}"`);
+  }
+
+  const budgetOrder = { economico: 1, medio: 2, lusso: 3 };
+  if (trip.budget !== template.budget) {
+    const direction = (budgetOrder[trip.budget] || 2) > (budgetOrder[template.budget] || 2) ? 'higher' : 'lower';
+    diffs.push(`budget: from "${template.budget}" to "${trip.budget}" (${direction})`);
+  }
+
+  if (Math.abs(days - templateDays) > 0) {
+    const direction = days > templateDays ? `${days - templateDays} more day(s)` : `${templateDays - days} fewer day(s)`;
+    diffs.push(`duration: from ${templateDays} to ${days} days (${direction})`);
+  }
+
+  const tripInterests = (trip.interests || []).map(i => i.toLowerCase());
+  const tplInterests = (template.interests || []).map(i => i.toLowerCase());
+  const addedInterests = tripInterests.filter(i => !tplInterests.includes(i));
+  const removedInterests = tplInterests.filter(i => !tripInterests.includes(i));
+  if (addedInterests.length) diffs.push(`new interests added: ${addedInterests.join(', ')}`);
+  if (removedInterests.length) diffs.push(`interests removed: ${removedInterests.join(', ')}`);
+
+  const tripIntolerances = (trip.food_intolerances || []).join(', ');
+  const tplIntolerances = (template.food_intolerances || []).join(', ');
+  if (tripIntolerances !== tplIntolerances) {
+    diffs.push(`food intolerances changed to: ${tripIntolerances || 'none'}`);
+  }
+
+  if ((trip.meal_time_preference || '13:00') !== (template.meal_time_preference || '13:00')) {
+    diffs.push(`preferred lunch time changed to: ${trip.meal_time_preference}`);
+  }
+
+  // Build natural-language adaptation sentence
+  const adaptationSentence = diffs.length > 0
+    ? `Adapt this itinerary with the following changes: ${diffs.join('; ')}.`
+    : 'The parameters are very similar — mainly update the dates.';
+
   const templateItinerary = JSON.stringify(template.itinerary || []);
 
   return `
-You are an expert travel planner. You have an existing itinerary as a starting base and need to adapt it to a new traveler's preferences.
+You are an expert travel planner. You have an existing itinerary as a base and must adapt it for a new traveler.
 IMPORTANT: Write ALL text content in ${langName}.
 
-BASE ITINERARY (already generated, use it as a starting point):
+${adaptationSentence}
+
+BASE ITINERARY (use this as a starting point — reuse activities, GPS coordinates, and booking URLs where they still fit):
 ${templateItinerary}
 
-NEW TRIP DETAILS TO ADAPT FOR:
+NEW TRIP DETAILS:
 DESTINATION: ${trip.destination}, ${trip.country || ''}
 DATES: from ${trip.start_date} to ${trip.end_date} (${days} days)
 TRAVELERS: ${trip.travelers}
@@ -161,22 +205,24 @@ FOOD PREFERENCES:
 - Foods to avoid: ${trip.disliked_foods || 'not specified'}
 - Preferred lunch time: ${trip.meal_time_preference || '13:00'}
 
-ADAPTATION INSTRUCTIONS:
-1. Keep activities that are compatible with the new preferences. Reuse existing GPS coordinates and booking URLs where applicable.
-2. Replace or adjust only activities that conflict with the new budget, interests, food preferences, or duration differences.
-3. If the new trip is shorter, remove days from the end. If longer, add new days.
-4. Adjust restaurant choices to respect the new food preferences and lunch time.
-5. Update all dates to match the new trip dates (${trip.start_date} to ${trip.end_date}).
-6. Ensure activity names remain specific (operator names, etc.).
+ADAPTATION RULES:
+1. Keep all activities that are still compatible with the new parameters.
+2. Replace only what conflicts with the changed parameters (budget, travelers type, interests, food).
+3. If travelers changed (e.g. solo → group of friends), replace romantic/solo activities with group-friendly ones; adjust restaurant choices and atmosphere accordingly.
+4. If budget changed, upgrade or downgrade hotels, restaurants and paid experiences proportionally.
+5. If duration changed, add or remove days from the end.
+6. Update ALL dates to match the new trip dates (${trip.start_date} to ${trip.end_date}).
+7. Keep activity names specific (include operator names, etc.).
+8. Keep existing booking_url values where activities are reused.
 
 ${!trip.has_accommodation ? `
-HOTELS: suggest 3 hotels suitable for "${trip.budget}" budget. Reuse suggestions from the base if they match, otherwise replace.
+HOTELS: suggest 3 hotels for "${trip.budget}" budget. Reuse base suggestions if they still fit the new budget, otherwise replace.
 ` : ''}
 
 ${trip.wants_transfer_info && trip.arrival_airport ? `
-Add airport transfer activities as specified:
-- Start of Day 1: "🛬 ${trip.arrival_airport} → ${trip.accommodation_name}" (trasporto, step-by-step public transport)
-- End of last day: "🛫 ${trip.accommodation_name} → ${trip.arrival_airport}" (trasporto, step-by-step return)
+Add airport transfer activities:
+- Start of Day 1: "🛬 ${trip.arrival_airport} → ${trip.accommodation_name}" (type: trasporto, step-by-step public transport)
+- End of last day: "🛫 ${trip.accommodation_name} → ${trip.arrival_airport}" (type: trasporto, step-by-step return)
 ` : ''}
 
 Respond ONLY with the required JSON, no additional text.
