@@ -32,6 +32,11 @@ const AuthenticatedApp = () => {
     }
   }
 
+  if (!isAuthenticated) {
+    navigateToLogin();
+    return null;
+  }
+
   return (
     <Routes>
       <Route path="/" element={<Home />} />

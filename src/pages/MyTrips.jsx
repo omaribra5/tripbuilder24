@@ -7,6 +7,7 @@ import { it, enUS, fr, de, es, pt } from 'date-fns/locale';
 import { useLanguage } from '@/lib/LanguageContext';
 import { t } from '@/lib/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { useAuth } from '@/lib/AuthContext';
 
 const DATE_LOCALES = { it, en: enUS, fr, de, es, pt };
 
@@ -20,9 +21,12 @@ export default function MyTrips() {
   const { language } = useLanguage();
   const dateLocale = DATE_LOCALES[language] || enUS;
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+
   const { data: trips = [], isLoading } = useQuery({
-    queryKey: ['trips'],
-    queryFn: () => base44.entities.Trip.list('-created_date'),
+    queryKey: ['trips', user?.email],
+    queryFn: () => base44.entities.Trip.filter({ created_by: user.email }, '-created_date'),
+    enabled: !!user?.email,
   });
 
   const deleteMutation = useMutation({
