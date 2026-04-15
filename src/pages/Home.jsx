@@ -26,7 +26,7 @@ export default function Home() {
           <img
             src="https://media.base44.com/images/public/69d2b459265164ba16bfc871/6c9d959b6_pikes_1776257498690.jpg"
             alt="TripBuilder24"
-            className="h-7 w-auto object-contain"
+            className="h-10 w-auto object-contain"
           />
         </div>
         <LanguageSwitcher />
