@@ -51,6 +51,10 @@
       "type": "string",
       "description": "Additional notes"
     },
+    "wants_restaurants": {
+      "type": "boolean",
+      "description": "Whether the user wants AI to include restaurant suggestions in the tour"
+    },
     "food_intolerances": {
       "type": "array",
       "items": {
@@ -68,7 +72,11 @@
     },
     "meal_time_preference": {
       "type": "string",
-      "description": "Preferred meal time e.g. 13:00"
+      "description": "Preferred lunch time e.g. 13:00"
+    },
+    "dinner_time_preference": {
+      "type": "string",
+      "description": "Preferred dinner time e.g. 20:00"
     },
     "has_accommodation": {
       "type": "boolean",

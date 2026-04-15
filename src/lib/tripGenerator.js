@@ -85,18 +85,27 @@ BUDGET: ${trip.budget}
 INTERESTS: ${(trip.interests || []).join(', ')}
 NOTES: ${trip.notes || 'none'}
 
-FOOD PREFERENCES:
-- Intolerances: ${(trip.food_intolerances || []).join(', ') || 'none'}
+MEALS:
+${trip.wants_restaurants === false
+  ? `- The user prefers to find restaurants on their own. DO NOT add any restaurant activities.
+- Instead, add a FREE TIME block of exactly 2 hours around lunchtime (~13:00) every day with type "pausa" and name "🍽️ Pausa pranzo (tempo libero)" and description "Tempo libero per il pranzo — scegli il ristorante che preferisci".
+- Similarly add a FREE TIME block of exactly 2 hours around dinnertime (~20:00) every day with type "pausa" and name "🍽️ Pausa cena (tempo libero)" and description "Tempo libero per la cena — scegli il ristorante che preferisci".`
+  : `- Intolerances: ${(trip.food_intolerances || []).join(', ') || 'none'}
 - Favorite foods: ${trip.favorite_foods || 'not specified'}
 - Foods to avoid: ${trip.disliked_foods || 'not specified'}
 - Preferred lunch time: ${trip.meal_time_preference || '13:00'}
+- Preferred dinner time: ${trip.dinner_time_preference || '20:00'}`
+}
 
 IMPORTANT INSTRUCTIONS:
 1. For each day include all major attractions with realistic times and duration in minutes.
-2. Include a restaurant at the time closest to the preferred lunch time (${trip.meal_time_preference || '13:00'}), considering the previous attraction schedules.
-3. The restaurant must be near the previous or next attraction and respect intolerances and preferences.
+${trip.wants_restaurants !== false
+  ? `2. Include a restaurant at the time closest to the preferred lunch time (${trip.meal_time_preference || '13:00'}) and one near dinner time (${trip.dinner_time_preference || '20:00'}), considering the previous attraction schedules.
+3. The restaurant must be near the previous or next attraction and respect intolerances and preferences.`
+  : `2. Place the 2-hour lunch pause around 13:00 and the 2-hour dinner pause around 20:00 each day.`
+}
 4. For each activity include realistic GPS coordinates (lat/lng).
-5. The type field can be: "attrazione", "ristorante", "museo", "parco", "shopping", "trasporto".
+5. The type field can be: "attrazione", "ristorante", "museo", "parco", "shopping", "trasporto", "pausa".
 6. For restaurants include in the "tip" field info about cuisine, average price and why it's suitable.
 7. VERY IMPORTANT - BOOKING URL: For EVERY bookable activity search the best specific operator online. Use GetYourGuide, Viator, Airbnb Experiences or the official site. Never leave booking_url empty for a bookable experience.
 8. For restaurants use a TripAdvisor or Google Maps link in booking_url.
@@ -199,11 +208,17 @@ BUDGET: ${trip.budget}
 INTERESTS: ${(trip.interests || []).join(', ')}
 NOTES: ${trip.notes || 'none'}
 
-FOOD PREFERENCES:
-- Intolerances: ${(trip.food_intolerances || []).join(', ') || 'none'}
+MEALS:
+${trip.wants_restaurants === false
+  ? `- The user prefers to find restaurants on their own. DO NOT add any restaurant activities.
+- Instead, add a FREE TIME block of exactly 2 hours around lunchtime (~13:00) every day with type "pausa" and name "🍽️ Pausa pranzo (tempo libero)" and description "Tempo libero per il pranzo — scegli il ristorante che preferisci".
+- Similarly add a FREE TIME block of exactly 2 hours around dinnertime (~20:00) every day with type "pausa" and name "🍽️ Pausa cena (tempo libero)" and description "Tempo libero per la cena — scegli il ristorante che preferisci".`
+  : `- Intolerances: ${(trip.food_intolerances || []).join(', ') || 'none'}
 - Favorite foods: ${trip.favorite_foods || 'not specified'}
 - Foods to avoid: ${trip.disliked_foods || 'not specified'}
 - Preferred lunch time: ${trip.meal_time_preference || '13:00'}
+- Preferred dinner time: ${trip.dinner_time_preference || '20:00'}`
+}
 
 ADAPTATION RULES:
 1. Keep all activities that are still compatible with the new parameters.
