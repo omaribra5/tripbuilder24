@@ -40,7 +40,6 @@ const AuthenticatedApp = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Landing />} />
       <Route path="/app" element={<Home />} />
       <Route path="/new-trip" element={<NewTrip />} />
       <Route path="/my-trips" element={<MyTrips />} />
@@ -57,18 +56,24 @@ const AppWithLanguage = () => {
   return <AuthenticatedApp />;
 };
 
+
 function App() {
   return (
-    <LanguageProvider>
-      <AuthProvider>
-        <QueryClientProvider client={queryClientInstance}>
-          <Router>
-            <AppWithLanguage />
-          </Router>
-          <Toaster />
-        </QueryClientProvider>
-      </AuthProvider>
-    </LanguageProvider>
+    <QueryClientProvider client={queryClientInstance}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/*" element={
+            <LanguageProvider>
+              <AuthProvider>
+                <AppWithLanguage />
+              </AuthProvider>
+            </LanguageProvider>
+          } />
+        </Routes>
+      </Router>
+      <Toaster />
+    </QueryClientProvider>
   )
 }
 
