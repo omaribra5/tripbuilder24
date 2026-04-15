@@ -23,11 +23,10 @@ export default function Home() {
       {/* Top nav */}
       <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
         <div className="flex items-center gap-2">
-          <img
-            src="https://media.base44.com/images/public/69d2b459265164ba16bfc871/6c9d959b6_pikes_1776257498690.jpg"
-            alt="TripBuilder24"
-            className="h-10 w-auto object-contain"
-          />
+          <div className="w-7 h-7 rounded bg-indigo-500 flex items-center justify-center">
+            <MapPin className="w-4 h-4 text-white" strokeWidth={2.5} />
+          </div>
+          <span className="text-sm font-semibold tracking-tight text-white/90">Wandr</span>
         </div>
         <LanguageSwitcher />
       </nav>
