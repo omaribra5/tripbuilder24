@@ -6,13 +6,16 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { format } from 'date-fns';
+import { useAuth } from '@/lib/AuthContext';
 
 export default function Home() {
   const { language } = useLanguage();
+  const { user } = useAuth();
 
   const { data: trips = [], isLoading } = useQuery({
-    queryKey: ['trips'],
-    queryFn: () => base44.entities.Trip.list('-created_date', 6),
+    queryKey: ['trips', user?.email],
+    queryFn: () => base44.entities.Trip.filter({ created_by: user.email }, '-created_date', 6),
+    enabled: !!user?.email,
   });
 
   return (
