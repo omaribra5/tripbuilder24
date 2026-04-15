@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { LanguageProvider, useLanguage } from '@/lib/LanguageContext';
 import LanguagePicker from '@/components/LanguagePicker';
+import Landing from '@/pages/Landing';
 import Home from '@/pages/Home';
 import NewTrip from '@/pages/NewTrip';
 import MyTrips from '@/pages/MyTrips';
@@ -39,7 +40,8 @@ const AuthenticatedApp = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/app" element={<Home />} />
       <Route path="/new-trip" element={<NewTrip />} />
       <Route path="/my-trips" element={<MyTrips />} />
       <Route path="/trip/:id" element={<TripDetail />} />
