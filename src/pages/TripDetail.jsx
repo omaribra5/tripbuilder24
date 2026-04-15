@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2, Download, MapPin, Wallet } from 'lucide-react';
+import { ArrowLeft, Loader2, Download, MapPin, Wallet, Map, FileText } from 'lucide-react';
 import ItineraryTab from '@/components/trip/ItineraryTab';
 import MapTab from '@/components/trip/MapTab';
 import ExpensesTab from '@/components/trip/ExpensesTab';
@@ -95,17 +95,21 @@ export default function TripDetail() {
       {/* Tabs */}
       <div className="max-w-4xl mx-auto px-4 py-6">
         <Tabs defaultValue="itinerary">
-          <TabsList className="w-full grid grid-cols-4 mb-6 bg-white border border-slate-200 shadow-sm p-1 rounded-lg h-auto">
-            <TabsTrigger value="itinerary" className="gap-1.5 text-xs py-2 data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all">
-              <MapPin className="w-3.5 h-3.5" /> {t(language, 'tab_itinerary')}
+          <TabsList className="w-full grid grid-cols-4 mb-6 bg-white border border-slate-200 shadow-md p-1.5 rounded-2xl h-auto">
+            <TabsTrigger value="itinerary" className="flex flex-col items-center gap-1 py-3 text-xs font-semibold text-slate-500 data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl transition-all">
+              <MapPin className="w-5 h-5" />
+              {t(language, 'tab_itinerary')}
             </TabsTrigger>
-            <TabsTrigger value="map" className="gap-1.5 text-xs py-2 data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all">
+            <TabsTrigger value="map" className="flex flex-col items-center gap-1 py-3 text-xs font-semibold text-slate-500 data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl transition-all">
+              <Map className="w-5 h-5" />
               {t(language, 'tab_map')}
             </TabsTrigger>
-            <TabsTrigger value="expenses" className="gap-1.5 text-xs py-2 data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all">
-              <Wallet className="w-3.5 h-3.5" /> Budget
+            <TabsTrigger value="expenses" className="flex flex-col items-center gap-1 py-3 text-xs font-semibold text-slate-500 data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl transition-all">
+              <Wallet className="w-5 h-5" />
+              Budget
             </TabsTrigger>
-            <TabsTrigger value="documents" className="gap-1.5 text-xs py-2 data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-md transition-all">
+            <TabsTrigger value="documents" className="flex flex-col items-center gap-1 py-3 text-xs font-semibold text-slate-500 data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl transition-all">
+              <FileText className="w-5 h-5" />
               Docs
             </TabsTrigger>
           </TabsList>
