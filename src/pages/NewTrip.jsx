@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import StepBasicInfo from '@/components/trip/StepBasicInfo';
+import StepLandmarks from '@/components/trip/StepLandmarks';
 import StepPreferences from '@/components/trip/StepPreferences';
 import StepFood from '@/components/trip/StepFood';
 import StepAccommodation from '@/components/trip/StepAccommodation';
@@ -16,6 +17,7 @@ export default function NewTrip() {
   const { language } = useLanguage();
   const STEPS = [
     t(language, 'step_destination'),
+    'Monumenti',
     t(language, 'step_preferences'),
     t(language, 'step_food'),
     t(language, 'step_accommodation'),
@@ -31,6 +33,8 @@ export default function NewTrip() {
     budget: 'medio',
     interests: [],
     notes: '',
+    trip_intensity: 3,
+    wished_landmarks: [],
     wants_restaurants: null,
     food_intolerances: [],
     favorite_foods: '',
@@ -93,9 +97,10 @@ export default function NewTrip() {
 
       <div className="max-w-xl mx-auto px-6 py-10">
         {step === 0 && <StepBasicInfo {...stepProps} onNext={handleNext} />}
-        {step === 1 && <StepPreferences {...stepProps} onNext={handleNext} />}
-        {step === 2 && <StepFood {...stepProps} onNext={handleNext} />}
-        {step === 3 && <StepAccommodation {...stepProps} onNext={handleGenerate} />}
+        {step === 1 && <StepLandmarks {...stepProps} onNext={handleNext} />}
+        {step === 2 && <StepPreferences {...stepProps} onNext={handleNext} />}
+        {step === 3 && <StepFood {...stepProps} onNext={handleNext} />}
+        {step === 4 && <StepAccommodation {...stepProps} onNext={handleGenerate} />}
       </div>
     </div>
   );

@@ -51,9 +51,21 @@
       "type": "string",
       "description": "Additional notes"
     },
+    "trip_intensity": {
+      "type": "number",
+      "description": "Trip intensity from 1 (very relaxed) to 5 (very intense)",
+      "default": 3
+    },
+    "wished_landmarks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Names of landmarks the user wants to visit \u2014 must be included in the itinerary"
+    },
     "wants_restaurants": {
       "type": "boolean",
-      "description": "Whether the user wants AI to include restaurant suggestions in the tour"
+      "description": "Whether the user wants AI to include restaurant suggestions"
     },
     "food_intolerances": {
       "type": "array",

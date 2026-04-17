@@ -84,6 +84,8 @@ TRAVELERS: ${trip.travelers}
 BUDGET: ${trip.budget}
 INTERESTS: ${(trip.interests || []).join(', ')}
 NOTES: ${trip.notes || 'none'}
+TRIP INTENSITY: ${trip.trip_intensity || 3}/5 (1=very relaxed: max 2-3 activities/day; 3=balanced: 4-5 activities/day; 5=very intense: up to 7-8 activities/day)
+${(trip.wished_landmarks || []).length > 0 ? `MANDATORY LANDMARKS — these MUST be included in the itinerary: ${trip.wished_landmarks.join(', ')}` : ''}
 
 MEALS:
 ${trip.wants_restaurants === false
@@ -98,7 +100,7 @@ ${trip.wants_restaurants === false
 }
 
 IMPORTANT INSTRUCTIONS:
-1. For each day include all major attractions with realistic times and duration in minutes.
+1. For each day include attractions based on the trip intensity (${trip.trip_intensity || 3}/5). Adjust the number of activities per day accordingly. ${(trip.wished_landmarks || []).length > 0 ? `The following landmarks are MANDATORY and must appear in the itinerary: ${trip.wished_landmarks.join(', ')}.` : ''}
 ${trip.wants_restaurants !== false
   ? `2. Include a restaurant at the time closest to the preferred lunch time (${trip.meal_time_preference || '13:00'}) and one near dinner time (${trip.dinner_time_preference || '20:00'}), considering the previous attraction schedules.
 3. The restaurant must be near the previous or next attraction and respect intolerances and preferences.`

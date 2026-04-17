@@ -3,6 +3,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useLanguage } from '@/lib/LanguageContext';
 import { t } from '@/lib/i18n';
+import { Turtle, Zap } from 'lucide-react';
 
 const INTERESTS = [
   { value: 'arte', labelKey: 'interest_art' },
@@ -80,6 +81,52 @@ export default function StepPreferences({ data, update, onNext }) {
               <div className={`text-sm ${data.budget === value ? 'text-indigo-100' : 'text-muted-foreground'}`}>{t(language, descKey)}</div>
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Trip intensity slider */}
+      <div>
+        <Label className="mb-3 block">{t(language, 'step2_intensity') || 'Intensità del viaggio'}</Label>
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 space-y-3">
+          <input
+            type="range"
+            min={1}
+            max={5}
+            step={1}
+            value={data.trip_intensity ?? 3}
+            onChange={(e) => update({ trip_intensity: Number(e.target.value) })}
+            className="w-full accent-indigo-600 cursor-pointer"
+          />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-xs text-gray-500">
+              <Turtle className="w-4 h-4 text-emerald-500" />
+              <span>Rilassato<br/><span className="text-[10px] text-gray-400">Poche cose, tanto tempo libero</span></span>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-gray-500 text-right">
+              <span className="text-right">Intenso<br/><span className="text-[10px] text-gray-400">Tante attività, giornate piene</span></span>
+              <Zap className="w-4 h-4 text-amber-500" />
+            </div>
+          </div>
+          {/* Visual indicator */}
+          <div className="flex justify-center">
+            {[1,2,3,4,5].map((v) => (
+              <div
+                key={v}
+                className={`w-8 h-1.5 mx-0.5 rounded-full transition-all ${
+                  v <= (data.trip_intensity ?? 3) ? 'bg-indigo-500' : 'bg-gray-200'
+                }`}
+              />
+            ))}
+          </div>
+          <p className="text-center text-xs font-medium text-indigo-600">
+            {[
+              'Molto rilassato — massimo 2-3 attrazioni al giorno',
+              'Rilassato — 3-4 attrazioni, tanti momenti di pausa',
+              'Bilanciato — 4-5 attrazioni al giorno',
+              'Attivo — 5-6 attrazioni, poche pause',
+              'Intensissimo — fino a 7-8 attrazioni, ogni minuto è pieno',
+            ][(data.trip_intensity ?? 3) - 1]}
+          </p>
         </div>
       </div>
 
